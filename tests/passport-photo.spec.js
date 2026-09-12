@@ -46,6 +46,6 @@ test('auto-position reserves hairline headroom rather than filling the crop', as
   // Face landmarks omit hair, so a modest face target plus a lower eye line is
   // required to keep a visible top-of-hair margin on common portrait photos.
   expect(behavior).toContain('targetFace=.50');
-  expect(behavior).toContain('(.42-m.eyeY)*400');
-  expect(behavior).toContain('extra space above the hairline');
+  expect(behavior).toContain('(.45-m.eyeY)*400');
+  expect(behavior).toContain('about 1.5–2mm of space above the hairline');
 });

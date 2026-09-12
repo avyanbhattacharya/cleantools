@@ -94,8 +94,10 @@
       await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
       m=await detectPreview();
       fireRange('xpos',Number($('xpos').value)+(.5-m.cx)*400);
-      fireRange('ypos',Number($('ypos').value)+(.42-m.eyeY)*400);
-      msg.textContent='Face positioned automatically with extra space above the hairline. Review the preview and run checks.';
+      // 45% places the eye line lower, adding about 16px of headroom in the
+      // 35×45mm output (roughly 1.5–2mm at its 300dpi print size).
+      fireRange('ypos',Number($('ypos').value)+(.45-m.eyeY)*400);
+      msg.textContent='Face positioned automatically with about 1.5–2mm of space above the hairline. Review the preview and run checks.';
     }catch(e){console.error(e);msg.textContent=e.message||'Automatic positioning could not run.';}
     finally{autoBusy=false;b.disabled=false;b.textContent='Auto-position face';}
   });
