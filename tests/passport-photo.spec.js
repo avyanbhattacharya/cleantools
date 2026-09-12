@@ -39,6 +39,32 @@ test('passport 4x6 print sheet downloads after an image is loaded', async ({ pag
   expect(download.suggestedFilename()).toBe('passport-photo-4x6-sheet-4-copies.jpg');
 });
 
+test('630 by 810 passport download is JPEG and stays within 250 KB', async ({ page }) => {
+  await page.goto('/passport-photo/');
+  const fixture = path.join(__dirname, 'fixtures', 'passport-test.svg');
+  await page.locator('#fileInput').setInputFiles(fixture);
+  await page.locator('#format').selectOption('35x45');
+
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    page.getByRole('button', { name: /download single photo/i }).click()
+  ]);
+  expect(download.suggestedFilename()).toBe('passport-photo-630x810.jpg');
+  const stream = await download.createReadStream();
+  const chunks = [];
+  for await (const chunk of stream) chunks.push(chunk);
+  const bytes = Buffer.concat(chunks);
+  expect(bytes.length).toBeLessThanOrEqual(250 * 1024);
+  expect(bytes.subarray(0, 3).toString('hex')).toBe('ffd8ff');
+  const dimensions = await page.evaluate(async base64 => new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve([image.naturalWidth, image.naturalHeight]);
+    image.onerror = reject;
+    image.src = `data:image/jpeg;base64,${base64}`;
+  }), bytes.toString('base64'));
+  expect(dimensions).toEqual([630, 810]);
+});
+
 test('auto-position reserves hairline headroom rather than filling the crop', async ({ page }) => {
   await page.goto('/passport-photo/');
   const behavior = await page.evaluate(async () => (await (await fetch('/assets/advanced.js')).text()));
