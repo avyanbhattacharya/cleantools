@@ -87,13 +87,15 @@
     const b=$('autoPosition'),msg=$('autoPositionStatus');b.disabled=true;b.textContent='Positioning…';
     try{
       let m=await detectPreview();
-      const zoom=$('zoom'),current=Number(zoom.value),targetFace=.55;
+      // Face landmarks do not include the full hairline. Leave extra space above
+      // the detected face so a normal hairstyle is not cropped by auto-position.
+      const zoom=$('zoom'),current=Number(zoom.value),targetFace=.50;
       fireRange('zoom',current*(targetFace/Math.max(.01,m.faceH)));
       await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
       m=await detectPreview();
       fireRange('xpos',Number($('xpos').value)+(.5-m.cx)*400);
-      fireRange('ypos',Number($('ypos').value)+(.38-m.eyeY)*400);
-      msg.textContent='Face positioned automatically. Review the preview and run checks.';
+      fireRange('ypos',Number($('ypos').value)+(.42-m.eyeY)*400);
+      msg.textContent='Face positioned automatically with extra space above the hairline. Review the preview and run checks.';
     }catch(e){console.error(e);msg.textContent=e.message||'Automatic positioning could not run.';}
     finally{autoBusy=false;b.disabled=false;b.textContent='Auto-position face';}
   });
