@@ -41,7 +41,7 @@ test('passport 4x6 print sheet downloads after an image is loaded', async ({ pag
 
 test('auto-position reserves hairline headroom rather than filling the crop', async ({ page }) => {
   await page.goto('/passport-photo/');
-  const behavior = await page.evaluate(async () => (await fetch('/assets/advanced.js')).then(response => response.text()));
+  const behavior = await page.evaluate(async () => (await (await fetch('/assets/advanced.js')).text()));
 
   // Face landmarks omit hair, so a modest face target plus a lower eye line is
   // required to keep a visible top-of-hair margin on common portrait photos.
