@@ -14,8 +14,8 @@ test('passport photo upload reveals editor and download controls', async ({ page
   await expect(page.locator('#preview')).toHaveAttribute('height', '600');
 
   await page.locator('#format').selectOption('35x45');
-  await expect(page.locator('#preview')).toHaveAttribute('width', '413');
-  await expect(page.locator('#preview')).toHaveAttribute('height', '531');
+  await expect(page.locator('#preview')).toHaveAttribute('width', '630');
+  await expect(page.locator('#preview')).toHaveAttribute('height', '810');
 
   await page.locator('#brightness').evaluate(el => {
     el.value = '10';
@@ -43,9 +43,9 @@ test('auto-position reserves hairline headroom rather than filling the crop', as
   await page.goto('/passport-photo/');
   const behavior = await page.evaluate(async () => (await (await fetch('/assets/advanced.js')).text()));
 
-  // Face landmarks omit hair, so a modest face target plus a lower eye line is
-  // required to keep a visible top-of-hair margin on common portrait photos.
-  expect(behavior).toContain('targetFace=.50');
-  expect(behavior).toContain('(.45-m.eyeY)*400');
-  expect(behavior).toContain('about 1.5–2mm of space above the hairline');
+  // Face landmarks omit the crown, so these calibrated targets aim for the
+  // required 80–85% full-head height while retaining a hair margin.
+  expect(behavior).toContain('targetFace=.56');
+  expect(behavior).toContain('(.50-m.eyeY)*400');
+  expect(behavior).toContain('aim for 80–85% full-head height');
 });
