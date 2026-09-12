@@ -87,17 +87,16 @@
     const b=$('autoPosition'),msg=$('autoPositionStatus');b.disabled=true;b.textContent='Positioning…';
     try{
       let m=await detectPreview();
-      // Face landmarks do not include the full hairline. Leave extra space above
-      // the detected face so a normal hairstyle is not cropped by auto-position.
-      const zoom=$('zoom'),current=Number(zoom.value),targetFace=.50;
+      // Face landmarks omit the crown of the hair. This calibrated target aims
+      // for the requested 80–85% full-head height without cropping the crown.
+      const zoom=$('zoom'),current=Number(zoom.value),targetFace=.56;
       fireRange('zoom',current*(targetFace/Math.max(.01,m.faceH)));
       await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
       m=await detectPreview();
       fireRange('xpos',Number($('xpos').value)+(.5-m.cx)*400);
-      // 45% places the eye line lower, adding about 16px of headroom in the
-      // 35×45mm output (roughly 1.5–2mm at its 300dpi print size).
-      fireRange('ypos',Number($('ypos').value)+(.45-m.eyeY)*400);
-      msg.textContent='Face positioned automatically with about 1.5–2mm of space above the hairline. Review the preview and run checks.';
+      // 50% moves the enlarged crop down to retain about 30px above the hair.
+      fireRange('ypos',Number($('ypos').value)+(.50-m.eyeY)*400);
+      msg.textContent='Face positioned automatically to aim for 80–85% full-head height with a small margin above the hair. Review the preview and run checks.';
     }catch(e){console.error(e);msg.textContent=e.message||'Automatic positioning could not run.';}
     finally{autoBusy=false;b.disabled=false;b.textContent='Auto-position face';}
   });
