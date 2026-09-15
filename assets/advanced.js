@@ -41,7 +41,7 @@
     if(framing==='us')return {targetFace:.43,targetEye:.44,liveMin:.22,liveMax:.48,tolerance:.035,summary:'Face positioned for the 2×2 inch head-size range with visible hair and a small top margin.'};
     if(framing==='canada')return {targetFace:.46,targetEye:.43,liveMin:.25,liveMax:.54,tolerance:.035,summary:'Face positioned for the Canada 50 × 70 mm head-size range with visible hair and a small top margin.'};
     if(framing==='custom')return {targetFace:.52,targetEye:.44,liveMin:.26,liveMax:.56,tolerance:.04,summary:'Face positioned using general passport-photo guidance. Verify the requirements for your custom size.'};
-    return {targetFace:.67,targetEye:.40,liveMin:.34,liveMax:.66,tolerance:.035,summary:'Face positioned to aim for 80–85% full-head height with about 30 px of top clearance on a 630 × 810 photo.'};
+    return {targetFace:.67,targetEye:.46,liveMin:.34,liveMax:.66,tolerance:.035,summary:'Face positioned to aim for 80–85% full-head height while preserving about 30 px of clearance above the hair on a 630 × 810 photo.'};
   }
 
   function framingProfile(){return profileForFraming(window.getPassportFormat?.().framing);}
