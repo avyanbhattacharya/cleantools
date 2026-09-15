@@ -34,6 +34,15 @@
     return{minX,maxX,minY,maxY,cx,faceH,eyeY,tilt};
   }
 
+  function framingProfile(){
+    // The selected output format determines the official framing target.
+    // 35×45 mm uses the owner's requested 80–85% full-head composition;
+    // US-style 2×2 has a smaller published full-head range (50–69%).
+    return $('format')?.value==='2x2'
+      ? {targetFace:.43,targetEye:.44,liveMin:.22,liveMax:.48,summary:'Face positioned for the 2×2 inch head-size range with visible hair and a small top margin.'}
+      : {targetFace:.56,targetEye:.50,liveMin:.28,liveMax:.58,summary:'Face positioned automatically to aim for 80–85% full-head height with a small margin above the hair.'};
+  }
+
   function setLive(text,state='warn'){
     const el=$('liveStatus');if(!el)return;
     el.textContent=text;el.className=`live-status ${state}`;
@@ -47,7 +56,8 @@
       if(faces.length!==1){setLive(faces.length?'Only one face should be visible':'Move your face into the guide','warn');return}
       const m=metrics(faces[0],video.videoWidth,video.videoHeight),notes=[];
       if(Math.abs(m.cx-.5)>.09)notes.push(m.cx<.5?'move right':'move left');
-      if(m.faceH<.28)notes.push('move closer'); else if(m.faceH>.58)notes.push('move farther back');
+      const profile=framingProfile();
+      if(m.faceH<profile.liveMin)notes.push('move closer'); else if(m.faceH>profile.liveMax)notes.push('move farther back');
       if(m.tilt>7)notes.push('straighten your head');
       if(m.eyeY<.25)notes.push('move slightly down'); else if(m.eyeY>.48)notes.push('move slightly up');
       if(notes.length)setLive(notes.slice(0,2).join(' · '),'warn'); else setLive('Framing looks good ✓','pass');
@@ -87,16 +97,15 @@
     const b=$('autoPosition'),msg=$('autoPositionStatus');b.disabled=true;b.textContent='Positioning…';
     try{
       let m=await detectPreview();
-      // Face landmarks omit the crown of the hair. This calibrated target aims
-      // for the requested 80–85% full-head height without cropping the crown.
-      const zoom=$('zoom'),current=Number(zoom.value),targetFace=.56;
-      fireRange('zoom',current*(targetFace/Math.max(.01,m.faceH)));
+      // Face landmarks omit the crown of the hair, so every format reserves
+      // explicit headroom instead of zooming until the visible face fills its crop.
+      const profile=framingProfile(),zoom=$('zoom'),current=Number(zoom.value);
+      fireRange('zoom',current*(profile.targetFace/Math.max(.01,m.faceH)));
       await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
       m=await detectPreview();
       fireRange('xpos',Number($('xpos').value)+(.5-m.cx)*400);
-      // 50% moves the enlarged crop down to retain about 30px above the hair.
-      fireRange('ypos',Number($('ypos').value)+(.50-m.eyeY)*400);
-      msg.textContent='Face positioned automatically to aim for 80–85% full-head height with a small margin above the hair. Review the preview and run checks.';
+      fireRange('ypos',Number($('ypos').value)+(profile.targetEye-m.eyeY)*400);
+      msg.textContent=profile.summary+' Review the preview and run checks.';
     }catch(e){console.error(e);msg.textContent=e.message||'Automatic positioning could not run.';}
     finally{autoBusy=false;b.disabled=false;b.textContent='Auto-position face';}
   });

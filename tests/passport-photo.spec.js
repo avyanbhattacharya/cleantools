@@ -124,3 +124,16 @@ test('35×45 print sheet puts a visible 35 mm × 45 mm scale beside every copy',
   }), base64);
   guideInk.forEach(count => expect(count).toBeGreaterThan(8));
 });
+
+test('auto-position and framing checks use an appropriate profile for both output formats', async ({ page }) => {
+  await page.goto('/passport-photo/');
+  const behavior = await page.evaluate(async () => (await (await fetch('/assets/advanced.js')).text()));
+  const checks = await page.evaluate(async () => (await (await fetch('/assets/app.js')).text()));
+
+  expect(behavior).toContain("targetFace:.43");
+  expect(behavior).toContain("targetEye:.44");
+  expect(behavior).toContain("targetFace:.56");
+  expect(behavior).toContain("targetEye:.50");
+  expect(checks).toContain("isTwoInch=$('format').value==='2x2'");
+  expect(checks).toContain("passMin:.34,passMax:.52");
+});
