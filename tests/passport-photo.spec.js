@@ -138,7 +138,7 @@ test('auto-position and framing checks use an appropriate profile for both outpu
   expect(checks).toContain("passMin:.34,passMax:.52");
 });
 
-test('2×2 print sheet has clear shared cut seams and a scale for every copy', async ({ page }) => {
+test('2×2 print sheet uses a landscape layout with clear side-margin scales and cut seams', async ({ page }) => {
   await page.goto('/passport-photo/');
   const fixture = path.join(__dirname, 'fixtures', 'passport-test.svg');
   await page.locator('#fileInput').setInputFiles(fixture);
@@ -151,7 +151,7 @@ test('2×2 print sheet has clear shared cut seams and a scale for every copy', a
   const chunks = [];
   for await (const chunk of stream) chunks.push(chunk);
   const base64 = Buffer.concat(chunks).toString('base64');
-  const guideInk = await page.evaluate(async encoded => new Promise((resolve, reject) => {
+  const sheet = await page.evaluate(async encoded => new Promise((resolve, reject) => {
     const image = new Image();
     image.onload = () => {
       const canvas = document.createElement('canvas');
@@ -168,17 +168,21 @@ test('2×2 print sheet has clear shared cut seams and a scale for every copy', a
         }
         return count;
       };
-      resolve([
-        darkPixels(0, 250, 600, 285),
-        darkPixels(600, 250, 1200, 285),
-        darkPixels(0, 1515, 600, 1550),
-        darkPixels(600, 1515, 1200, 1550),
-        darkPixels(585, 300, 615, 1500),
-        darkPixels(0, 885, 1200, 915)
-      ]);
+      resolve({
+        size: [canvas.width, canvas.height],
+        ink: [
+          darkPixels(240, 0, 290, 600),
+          darkPixels(1510, 0, 1560, 600),
+          darkPixels(240, 600, 290, 1200),
+          darkPixels(1510, 600, 1560, 1200),
+          darkPixels(885, 0, 915, 1200),
+          darkPixels(300, 585, 1500, 615)
+        ]
+      });
     };
     image.onerror = reject;
     image.src = `data:image/jpeg;base64,${encoded}`;
   }), base64);
-  guideInk.forEach(count => expect(count).toBeGreaterThan(8));
+  expect(sheet.size).toEqual([1800, 1200]);
+  sheet.ink.forEach(count => expect(count).toBeGreaterThan(8));
 });
