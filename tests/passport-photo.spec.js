@@ -27,6 +27,19 @@ test('passport photo upload reveals editor and download controls', async ({ page
   await expect(page.locator('#brightness')).toHaveValue('0');
 });
 
+
+test('passport editor preview stays contained on a narrow mobile viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/passport-photo/');
+  const fixture = path.join(__dirname, 'fixtures', 'passport-test.svg');
+  await page.locator('#fileInput').setInputFiles(fixture);
+  const bounds = await page.locator('#previewGuide').evaluate(element => {
+    const rect = element.getBoundingClientRect();
+    return { right: rect.right, viewport: document.documentElement.clientWidth };
+  });
+  expect(bounds.right).toBeLessThanOrEqual(bounds.viewport + 1);
+});
+
 test('passport 4x6 print sheet downloads after an image is loaded', async ({ page }) => {
   await page.goto('/passport-photo/');
   const fixture = path.join(__dirname, 'fixtures', 'passport-test.svg');
