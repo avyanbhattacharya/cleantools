@@ -87,6 +87,8 @@ test('auto-position reserves hairline headroom rather than filling the crop', as
   expect(behavior).toContain('targetFace:.64');
   expect(behavior).toContain('targetEye:.48');
   expect(behavior).toContain('estimatedCrown=m.minY-m.faceH*.14');
+  expect(behavior).toContain("msg.textContent='Loading the on-device face model…'");
+  expect(behavior).not.toContain('for(let pass=0;pass<3;pass++)');
 });
 
 
