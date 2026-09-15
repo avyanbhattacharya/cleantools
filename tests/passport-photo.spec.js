@@ -84,8 +84,8 @@ test('auto-position reserves hairline headroom rather than filling the crop', as
 
   // Face landmarks omit the crown, so these calibrated targets aim for the
   // required 80–85% full-head height while retaining a hair margin.
-  expect(behavior).toContain('targetFace:.56');
-  expect(behavior).toContain('targetEye:.50');
+  expect(behavior).toContain('targetFace:.67');
+  expect(behavior).toContain('targetEye:.40');
   expect(behavior).toContain('aim for 80–85% full-head height');
 });
 
@@ -111,10 +111,18 @@ test('auto-position and framing checks use an appropriate profile for both outpu
 
   expect(behavior).toContain("targetFace:.43");
   expect(behavior).toContain("targetEye:.44");
-  expect(behavior).toContain("targetFace:.56");
-  expect(behavior).toContain("targetEye:.50");
+  expect(behavior).toContain("targetFace:.67");
+  expect(behavior).toContain("targetEye:.40");
   expect(checks).toContain("framing=window.getPassportFormat().framing");
   expect(checks).toContain("passMin:.34,passMax:.52");
+
+  const profiles = await page.evaluate(() => ({
+    us: window.passportAutoPositionProfile('us').targetFace,
+    biometric: window.passportAutoPositionProfile('biometric').targetFace,
+    canada: window.passportAutoPositionProfile('canada').targetFace,
+    custom: window.passportAutoPositionProfile('custom').targetFace
+  }));
+  expect(profiles).toEqual({ us: .43, biometric: .67, canada: .46, custom: .52 });
 });
 
 test('2×2 print sheet uses a clean exact six-copy layout', async ({ page }) => {
