@@ -186,3 +186,27 @@ test('2×2 print sheet uses a landscape layout with clear side-margin scales and
   expect(sheet.size).toEqual([1800, 1200]);
   sheet.ink.forEach(count => expect(count).toBeGreaterThan(8));
 });
+
+
+test('passport format library includes common verified sizes and a custom option', async ({ page }) => {
+  await page.goto('/passport-photo/');
+  const format = page.locator('#format');
+  await expect(format.locator('option')).toHaveCount(8);
+  await format.selectOption('canada-50x70');
+  await expect(page.locator('#preview')).toHaveAttribute('width', '591');
+  await expect(page.locator('#preview')).toHaveAttribute('height', '827');
+  await format.selectOption('custom');
+  await expect(page.locator('#customFormatControls')).toBeVisible();
+  await page.locator('#customWidth').fill('35');
+  await page.locator('#customHeight').fill('45');
+  await expect(page.locator('#preview')).toHaveAttribute('width', '413');
+  await expect(page.locator('#preview')).toHaveAttribute('height', '531');
+});
+
+test('print layout uses clean exact tiling and outside guides only when space permits', async ({ page }) => {
+  await page.goto('/passport-photo/');
+  const app = await page.evaluate(async () => (await (await fetch('/assets/app.js')).text()));
+  expect(app).toContain('layout.exact');
+  expect(app).toContain('showGuides=!layout.exact');
+  expect(app).toContain('sheetLayout(format.printW,format.printH)');
+});

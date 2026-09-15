@@ -38,9 +38,10 @@
     // The selected output format determines the official framing target.
     // 35×45 mm uses the owner's requested 80–85% full-head composition;
     // US-style 2×2 has a smaller published full-head range (50–69%).
-    return $('format')?.value==='2x2'
-      ? {targetFace:.43,targetEye:.44,liveMin:.22,liveMax:.48,summary:'Face positioned for the 2×2 inch head-size range with visible hair and a small top margin.'}
-      : {targetFace:.56,targetEye:.50,liveMin:.28,liveMax:.58,summary:'Face positioned automatically to aim for 80–85% full-head height with a small margin above the hair.'};
+    const framing=window.getPassportFormat?.().framing;
+    if(framing==='us')return {targetFace:.43,targetEye:.44,liveMin:.22,liveMax:.48,summary:'Face positioned for the 2×2 inch head-size range with visible hair and a small top margin.'};
+    if(framing==='canada')return {targetFace:.40,targetEye:.45,liveMin:.22,liveMax:.50,summary:'Face positioned for the Canada 50 × 70 mm head-size range with visible hair and a small top margin.'};
+    return {targetFace:.56,targetEye:.50,liveMin:.28,liveMax:.58,summary:'Face positioned automatically to aim for 80–85% full-head height with a small margin above the hair.'};
   }
 
   function setLive(text,state='warn'){
