@@ -376,6 +376,8 @@ test('Detect Edges finds the high-contrast document boundary and keeps manual ad
   await page.getByRole('button', { name: 'Detect Edges' }).click();
   await expect.poll(() => page.evaluate(() => window.__photoToScanDebug.lastDetectedCorners)).not.toBeNull();
   const detectedCorners = await page.evaluate(() => window.__photoToScanDebug.lastDetectedCorners);
+  const outlinePoints = await page.evaluate(() => window.__photoToScanDebug.outlinePoints);
+  expect(outlinePoints).toEqual(detectedCorners);
   const expected = [[0.15, 0.133], [0.875, 0.2], [0.813, 0.867], [0.125, 0.8]];
   detectedCorners.forEach((point, index) => {
     expect(Math.abs(point[0] - expected[index][0])).toBeLessThan(0.06);

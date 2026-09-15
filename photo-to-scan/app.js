@@ -42,7 +42,8 @@
     superseded: 0,
     lastCommittedRequestId: 0,
     lastCommittedBrightness: 0,
-    lastDetectedCorners: null
+    lastDetectedCorners: null,
+    outlinePoints: null
   };
 
   chooseImageBtn.addEventListener('click', () => {
@@ -229,6 +230,31 @@
     });
   }
 
+  function drawCornerOutline() {
+    if (!activeImg || pts.length !== 4 || !sourceCanvas.width || !sourceCanvas.height) return;
+    const ctx = sourceCanvas.getContext('2d');
+    ctx.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
+    ctx.drawImage(activeImg, 0, 0, sourceCanvas.width, sourceCanvas.height);
+
+    ctx.save();
+    ctx.beginPath();
+    pts.forEach(([x, y], index) => {
+      const px = x * sourceCanvas.width;
+      const py = y * sourceCanvas.height;
+      if (index === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    });
+    ctx.closePath();
+    ctx.strokeStyle = '#2563eb';
+    ctx.lineWidth = Math.max(2, Math.round(Math.min(sourceCanvas.width, sourceCanvas.height) / 180));
+    ctx.lineJoin = 'round';
+    ctx.shadowColor = 'rgba(255,255,255,.9)';
+    ctx.shadowBlur = 2;
+    ctx.stroke();
+    ctx.restore();
+    window.__photoToScanDebug.outlinePoints = pts.map(point => [...point]);
+  }
+
   function updateHandles() {
     if (!sourceCanvas.width) return;
     const canvasRect = sourceCanvas.getBoundingClientRect();
@@ -250,6 +276,7 @@
       el.setAttribute('aria-valuenow', pctX);
       el.setAttribute('aria-valuetext', `${pctX}% X, ${pctY}% Y`);
     });
+    drawCornerOutline();
   }
 
   // Corner Geometry Validation
