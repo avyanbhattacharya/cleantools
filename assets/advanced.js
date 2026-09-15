@@ -3,7 +3,15 @@
   const video=$('video'),preview=$('preview');
   if(!video||!preview)return;
 
-  let faceImage=null,faceVideo=null,visionFiles=null,liveTimer=null,liveBusy=false,autoBusy=false;
+  let faceImage=null,faceImagePromise=null,faceVideo=null,visionFiles=null,liveTimer=null,liveBusy=false,autoBusy=false;
+
+  function withTimeout(promise,ms,message){
+    let timer;
+    return Promise.race([
+      promise,
+      new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(message)),ms)})
+    ]).finally(()=>clearTimeout(timer));
+  }
 
   async function vision(){
     if(visionFiles)return visionFiles;
@@ -15,9 +23,12 @@
 
   async function imageLandmarker(){
     if(faceImage)return faceImage;
-    const {mod,files}=await vision();
-    faceImage=await mod.FaceLandmarker.createFromOptions(files,{baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task'},runningMode:'IMAGE',numFaces:1,minFaceDetectionConfidence:.5,minFacePresenceConfidence:.5});
-    return faceImage;
+    if(!faceImagePromise)faceImagePromise=(async()=>{
+      const {mod,files}=await vision();
+      faceImage=await mod.FaceLandmarker.createFromOptions(files,{baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task'},runningMode:'IMAGE',numFaces:1,minFaceDetectionConfidence:.5,minFacePresenceConfidence:.5});
+      return faceImage;
+    })().catch(error=>{faceImagePromise=null;throw error});
+    return faceImagePromise;
   }
 
   async function videoLandmarker(){
@@ -90,8 +101,10 @@
     el.value=String(Math.round(v));el.dispatchEvent(new Event('input',{bubbles:true}));
   }
 
-  async function detectPreview(){
-    const lmkr=await imageLandmarker(),img=await canvasImage(preview),det=lmkr.detect(img),faces=det.faceLandmarks||[];
+  async function detectPreview(onStage){
+    const lmkr=await withTimeout(imageLandmarker(),20000,'The face model took too long to load. Check your connection and tap Auto-position face again.');
+    onStage?.('Detecting your face…');
+    const img=await canvasImage(preview),det=lmkr.detect(img),faces=det.faceLandmarks||[];
     if(faces.length!==1)throw Error('Exactly one clear face is required for automatic positioning.');
     return metrics(faces[0],preview.width,preview.height);
   }
@@ -103,28 +116,20 @@
       // Allow Safari to paint the busy state before face detection blocks the
       // main thread briefly. One measured adjustment plus one verification is
       // substantially faster than repeatedly running the model on mobile.
-      await new Promise(r=>requestAnimationFrame(r));
-      const profile=framingProfile(),m=await detectPreview(),zoom=$('zoom'),current=Number(zoom.value);
+      await new Promise(r=>setTimeout(r,50));
+      const profile=framingProfile(),m=await detectPreview(text=>{msg.textContent=text}),zoom=$('zoom'),current=Number(zoom.value);
+      msg.textContent='Applying the passport framing…';
       fireRange('zoom',current*(profile.targetFace/Math.max(.01,m.faceH)));
       const appliedScale=Number(zoom.value)/Math.max(1,current);
       const predictedCx=.5+(m.cx-.5)*appliedScale,predictedEye=.5+(m.eyeY-.5)*appliedScale;
       fireRange('xpos',Number($('xpos').value)+(.5-predictedCx)*400);
-      fireRange('ypos',Number($('ypos').value)+(profile.targetEye-predictedEye)*400);
-      await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-      let verified=await detectPreview();
-      // MediaPipe's face mesh stops near the forehead. Estimate the crown and
-      // make one final downward correction when hair would touch the top edge.
-      if(profile.topMargin){
-        const estimatedCrown=verified.minY-verified.faceH*.14;
-        if(estimatedCrown<profile.topMargin){
-          fireRange('ypos',Number($('ypos').value)+(profile.topMargin-estimatedCrown)*400);
-          await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-          verified=await detectPreview();
-        }
-      }
-      const crownClear=!profile.topMargin||(verified.minY-verified.faceH*.14)>=profile.topMargin-.01;
-      const reached=Math.abs(verified.faceH-profile.targetFace)<=profile.tolerance&&Math.abs(verified.eyeY-profile.targetEye)<=profile.tolerance&&crownClear;
-      msg.textContent=reached?profile.summary+' Review the preview and run checks.':'Automatic positioning reached the adjustment limit. Ensure the full hairline is visible, then fine-tune Zoom and Up / down before running checks.';
+      const eyeShift=profile.targetEye-predictedEye;
+      const estimatedCrown=m.minY-m.faceH*.14;
+      const predictedCrown=.5+(estimatedCrown-.5)*appliedScale;
+      const crownShift=profile.topMargin?profile.topMargin-predictedCrown:-1;
+      fireRange('ypos',Number($('ypos').value)+Math.max(eyeShift,crownShift)*400);
+      await new Promise(r=>requestAnimationFrame(r));
+      msg.textContent=profile.summary+' Review the hairline and run checks.';
     }catch(e){console.error(e);msg.textContent=e.message||'Automatic positioning could not run.';}
     finally{autoBusy=false;b.disabled=false;b.textContent='Auto-position face';}
   });
