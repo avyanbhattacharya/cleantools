@@ -34,15 +34,18 @@
     return{minX,maxX,minY,maxY,cx,faceH,eyeY,tilt};
   }
 
-  function framingProfile(){
-    // The selected output format determines the official framing target.
-    // 35×45 mm uses the owner's requested 80–85% full-head composition;
-    // US-style 2×2 has a smaller published full-head range (50–69%).
-    const framing=window.getPassportFormat?.().framing;
-    if(framing==='us')return {targetFace:.43,targetEye:.44,liveMin:.22,liveMax:.48,summary:'Face positioned for the 2×2 inch head-size range with visible hair and a small top margin.'};
-    if(framing==='canada')return {targetFace:.40,targetEye:.45,liveMin:.22,liveMax:.50,summary:'Face positioned for the Canada 50 × 70 mm head-size range with visible hair and a small top margin.'};
-    return {targetFace:.56,targetEye:.50,liveMin:.28,liveMax:.58,summary:'Face positioned automatically to aim for 80–85% full-head height with a small margin above the hair.'};
+  function profileForFraming(framing){
+    // Face landmarks stop near the forehead rather than the top of the hair.
+    // The biometric target is calibrated so the estimated full head occupies
+    // about 80–85% of the image with a small top margin.
+    if(framing==='us')return {targetFace:.43,targetEye:.44,liveMin:.22,liveMax:.48,tolerance:.035,summary:'Face positioned for the 2×2 inch head-size range with visible hair and a small top margin.'};
+    if(framing==='canada')return {targetFace:.46,targetEye:.43,liveMin:.25,liveMax:.54,tolerance:.035,summary:'Face positioned for the Canada 50 × 70 mm head-size range with visible hair and a small top margin.'};
+    if(framing==='custom')return {targetFace:.52,targetEye:.44,liveMin:.26,liveMax:.56,tolerance:.04,summary:'Face positioned using general passport-photo guidance. Verify the requirements for your custom size.'};
+    return {targetFace:.67,targetEye:.40,liveMin:.34,liveMax:.66,tolerance:.035,summary:'Face positioned to aim for 80–85% full-head height with about 30 px of top clearance on a 630 × 810 photo.'};
   }
+
+  function framingProfile(){return profileForFraming(window.getPassportFormat?.().framing);}
+  window.passportAutoPositionProfile=profileForFraming;
 
   function setLive(text,state='warn'){
     const el=$('liveStatus');if(!el)return;
@@ -97,16 +100,23 @@
     if(autoBusy)return;autoBusy=true;
     const b=$('autoPosition'),msg=$('autoPositionStatus');b.disabled=true;b.textContent='Positioning…';
     try{
-      let m=await detectPreview();
-      // Face landmarks omit the crown of the hair, so every format reserves
-      // explicit headroom instead of zooming until the visible face fills its crop.
-      const profile=framingProfile(),zoom=$('zoom'),current=Number(zoom.value);
-      fireRange('zoom',current*(profile.targetFace/Math.max(.01,m.faceH)));
-      await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+      const profile=framingProfile();
+      let m;
+      // Re-measure after each change because portrait formats alter the crop
+      // geometry substantially more than the square 2×2 format.
+      for(let pass=0;pass<3;pass++){
+        m=await detectPreview();
+        const current=Number($('zoom').value);
+        fireRange('zoom',current*(profile.targetFace/Math.max(.01,m.faceH)));
+        await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+        m=await detectPreview();
+        fireRange('xpos',Number($('xpos').value)+(.5-m.cx)*400);
+        fireRange('ypos',Number($('ypos').value)+(profile.targetEye-m.eyeY)*400);
+        await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+      }
       m=await detectPreview();
-      fireRange('xpos',Number($('xpos').value)+(.5-m.cx)*400);
-      fireRange('ypos',Number($('ypos').value)+(profile.targetEye-m.eyeY)*400);
-      msg.textContent=profile.summary+' Review the preview and run checks.';
+      const reached=Math.abs(m.faceH-profile.targetFace)<=profile.tolerance&&Math.abs(m.eyeY-profile.targetEye)<=profile.tolerance;
+      msg.textContent=reached?profile.summary+' Review the preview and run checks.':'Automatic positioning reached the adjustment limit. Fine-tune Zoom and Up / down, then run checks.';
     }catch(e){console.error(e);msg.textContent=e.message||'Automatic positioning could not run.';}
     finally{autoBusy=false;b.disabled=false;b.textContent='Auto-position face';}
   });
