@@ -71,7 +71,7 @@ test('auto-position reserves hairline headroom rather than filling the crop', as
 
   // Face landmarks omit the crown, so these calibrated targets aim for the
   // required 80–85% full-head height while retaining a hair margin.
-  expect(behavior).toContain('targetFace=.56');
+  expect(behavior).toContain('targetFace:.56');
   expect(behavior).toContain('targetEye:.50');
   expect(behavior).toContain('aim for 80–85% full-head height');
 });
@@ -100,7 +100,7 @@ test('auto-position and framing checks use an appropriate profile for both outpu
   expect(behavior).toContain("targetEye:.44");
   expect(behavior).toContain("targetFace:.56");
   expect(behavior).toContain("targetEye:.50");
-  expect(checks).toContain("isTwoInch=$('format').value==='2x2'");
+  expect(checks).toContain("framing=window.getPassportFormat().framing");
   expect(checks).toContain("passMin:.34,passMax:.52");
 });
 
