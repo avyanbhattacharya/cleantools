@@ -75,3 +75,52 @@ test('auto-position reserves hairline headroom rather than filling the crop', as
   expect(behavior).toContain('(.50-m.eyeY)*400');
   expect(behavior).toContain('aim for 80–85% full-head height');
 });
+
+
+test('35×45 print sheet puts a visible 35 mm × 45 mm scale beside every copy', async ({ page }) => {
+  await page.goto('/passport-photo/');
+  const fixture = path.join(__dirname, 'fixtures', 'passport-test.svg');
+  await page.locator('#fileInput').setInputFiles(fixture);
+  await page.locator('#format').selectOption('35x45');
+
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    page.getByRole('button', { name: /download 4×6 print sheet/i }).click()
+  ]);
+  const stream = await download.createReadStream();
+  const chunks = [];
+  for await (const chunk of stream) chunks.push(chunk);
+  const base64 = Buffer.concat(chunks).toString('base64');
+  const guideInk = await page.evaluate(async encoded => new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      const context = canvas.getContext('2d');
+      context.drawImage(image, 0, 0);
+      const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+      const darkPixels = (left, top, right, bottom) => {
+        let count = 0;
+        for (let y = top; y < bottom; y += 2) for (let x = left; x < right; x += 2) {
+          const i = (y * canvas.width + x) * 4;
+          if (pixels[i] < 75 && pixels[i + 1] < 75 && pixels[i + 2] < 75) count++;
+        }
+        return count;
+      };
+      resolve([
+        darkPixels(160, 300, 590, 340),
+        darkPixels(610, 300, 1040, 340),
+        darkPixels(160, 1455, 590, 1495),
+        darkPixels(610, 1455, 1040, 1495),
+        darkPixels(125, 345, 155, 890),
+        darkPixels(1045, 345, 1075, 890),
+        darkPixels(125, 910, 155, 1455),
+        darkPixels(1045, 910, 1075, 1455)
+      ]);
+    };
+    image.onerror = reject;
+    image.src = `data:image/jpeg;base64,${encoded}`;
+  }), base64);
+  guideInk.forEach(count => expect(count).toBeGreaterThan(8));
+});
