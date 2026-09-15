@@ -98,35 +98,32 @@
 
   $('autoPosition')?.addEventListener('click',async()=>{
     if(autoBusy)return;autoBusy=true;
-    const b=$('autoPosition'),msg=$('autoPositionStatus');b.disabled=true;b.textContent='Positioning…';
+    const b=$('autoPosition'),msg=$('autoPositionStatus');b.disabled=true;b.textContent='Positioning…';msg.textContent='Loading the on-device face model…';
     try{
-      const profile=framingProfile();
-      let m;
-      // Re-measure after each change because portrait formats alter the crop
-      // geometry substantially more than the square 2×2 format.
-      for(let pass=0;pass<3;pass++){
-        m=await detectPreview();
-        const current=Number($('zoom').value);
-        fireRange('zoom',current*(profile.targetFace/Math.max(.01,m.faceH)));
-        await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-        m=await detectPreview();
-        fireRange('xpos',Number($('xpos').value)+(.5-m.cx)*400);
-        fireRange('ypos',Number($('ypos').value)+(profile.targetEye-m.eyeY)*400);
-        await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-      }
-      m=await detectPreview();
+      // Allow Safari to paint the busy state before face detection blocks the
+      // main thread briefly. One measured adjustment plus one verification is
+      // substantially faster than repeatedly running the model on mobile.
+      await new Promise(r=>requestAnimationFrame(r));
+      const profile=framingProfile(),m=await detectPreview(),zoom=$('zoom'),current=Number(zoom.value);
+      fireRange('zoom',current*(profile.targetFace/Math.max(.01,m.faceH)));
+      const appliedScale=Number(zoom.value)/Math.max(1,current);
+      const predictedCx=.5+(m.cx-.5)*appliedScale,predictedEye=.5+(m.eyeY-.5)*appliedScale;
+      fireRange('xpos',Number($('xpos').value)+(.5-predictedCx)*400);
+      fireRange('ypos',Number($('ypos').value)+(profile.targetEye-predictedEye)*400);
+      await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+      let verified=await detectPreview();
       // MediaPipe's face mesh stops near the forehead. Estimate the crown and
       // make one final downward correction when hair would touch the top edge.
       if(profile.topMargin){
-        const estimatedCrown=m.minY-m.faceH*.14;
+        const estimatedCrown=verified.minY-verified.faceH*.14;
         if(estimatedCrown<profile.topMargin){
           fireRange('ypos',Number($('ypos').value)+(profile.topMargin-estimatedCrown)*400);
           await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-          m=await detectPreview();
+          verified=await detectPreview();
         }
       }
-      const crownClear=!profile.topMargin||(m.minY-m.faceH*.14)>=profile.topMargin-.01;
-      const reached=Math.abs(m.faceH-profile.targetFace)<=profile.tolerance&&Math.abs(m.eyeY-profile.targetEye)<=profile.tolerance&&crownClear;
+      const crownClear=!profile.topMargin||(verified.minY-verified.faceH*.14)>=profile.topMargin-.01;
+      const reached=Math.abs(verified.faceH-profile.targetFace)<=profile.tolerance&&Math.abs(verified.eyeY-profile.targetEye)<=profile.tolerance&&crownClear;
       msg.textContent=reached?profile.summary+' Review the preview and run checks.':'Automatic positioning reached the adjustment limit. Ensure the full hairline is visible, then fine-tune Zoom and Up / down before running checks.';
     }catch(e){console.error(e);msg.textContent=e.message||'Automatic positioning could not run.';}
     finally{autoBusy=false;b.disabled=false;b.textContent='Auto-position face';}
