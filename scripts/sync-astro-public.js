@@ -9,7 +9,7 @@ const publicRoot = path.join(root, 'public');
 const astroManagedToolFiles = {
   'clean-html-printer': ['index.html'], 'clean-pdf-printer': ['index.html'], 'compress-pdf': ['index.html'],
   'document-flattener': ['index.html'], 'heic-to-jpg': ['index.html'], 'image-to-pdf': ['index.html'],
-  'japa-counter': ['index.html'], 'merge-pdf': ['index.html'], 'passport-photo': ['index.html'],
+  'japa-counter': ['index.html', 'tap.html'], 'merge-pdf': ['index.html'], 'passport-photo': ['index.html'],
   'photo-to-scan': ['index.html'], 'qr-code-maker': ['index.html'], 'remove-photo-metadata': ['index.html'],
   'resize-image': ['index.html'], 'split-pdf': ['index.html']
 };

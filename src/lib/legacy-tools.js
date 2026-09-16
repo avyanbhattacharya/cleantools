@@ -8,7 +8,7 @@ export const toolRoutes = [
 ];
 
 export const astroManagedToolFiles = {
-  'japa-counter': ['index.html']
+  'japa-counter': ['index.html', 'tap.html']
 };
 
 const palette = {

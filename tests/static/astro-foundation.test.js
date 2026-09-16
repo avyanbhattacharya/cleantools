@@ -10,11 +10,14 @@ test('Astro builds the homepage and shared-shell tool routes while preserving le
   const packageJson = JSON.parse(read('package.json'));
   const config = read('astro.config.mjs');
   const sync = read('scripts/sync-astro-public.js');
+  const finalize = read('scripts/finalize-astro-output.js');
   const homepage = read('src/pages/index.astro');
   const toolRoutes = read('src/pages/[...slug].astro');
+  const tapRoute = read('src/pages/japa-counter/tap.html.astro');
   const toolShell = read('src/components/ToolShell.astro');
   assert.equal(packageJson.devDependencies.astro, '7.3.2');
   assert.match(packageJson.scripts.build, /astro build/);
+  assert.match(packageJson.scripts.build, /finalize-astro-output/);
   assert.match(config, /output:\s*'static'/);
   assert.match(sync, /'passport-photo'/);
   assert.match(sync, /'japa-counter'/);
@@ -22,9 +25,13 @@ test('Astro builds the homepage and shared-shell tool routes while preserving le
   assert.match(homepage, /set:html/);
   assert.match(toolRoutes, /getStaticPaths/);
   assert.match(toolRoutes, /toolRoutes/);
+  assert.match(tapRoute, /route="japa-counter"/);
+  assert.match(tapRoute, /file="tap.html"/);
   assert.match(toolShell, /Switch color theme/);
   assert.match(toolShell, /loadLegacyTool/);
   assert.match(sync, /astroManagedToolFiles/);
+  assert.match(sync, /'tap.html'/);
+  assert.match(finalize, /tap\.html/);
 });
 
 test('GitHub Pages deployment publishes the generated Astro output', () => {
