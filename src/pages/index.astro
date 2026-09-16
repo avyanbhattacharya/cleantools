@@ -1,0 +1,14 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+
+const source = fs.readFileSync(path.resolve(process.cwd(), 'index.html'), 'utf8');
+const head = source.match(/<head>([\s\S]*?)<\/head>/i)?.[1] || '';
+const body = source.match(/<body>([\s\S]*?)<\/body>/i)?.[1] || '';
+---
+
+<!doctype html>
+<html lang="en">
+  <head><Fragment set:html={head} /></head>
+  <body><Fragment set:html={body} /></body>
+</html>

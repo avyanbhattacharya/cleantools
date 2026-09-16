@@ -65,7 +65,7 @@ The permanent known-green historical reference branch is `baseline/clean-local-t
 
 ## Current architecture in one sentence
 
-Clean Local Tools is primarily a static HTML/CSS/JavaScript application hosted on GitHub Pages, with user-file processing performed in the browser and automated quality gates covering static invariants plus Chromium, desktop WebKit, and mobile WebKit workflows.
+Clean Local Tools is a static Astro-built site hosted on GitHub Pages. Existing tool routes continue to use browser HTML/CSS/JavaScript during the incremental migration; user-file processing remains in the browser. Automated quality gates cover static invariants plus Chromium, desktop WebKit, and mobile WebKit workflows.
 
 Local AI is an experimental architectural direction. Its reference implementation and physical-hardware evidence remain isolated from production on `test/webgpu-hardware-preview-v1` until the capability is ready for a separate promotion decision.
 
