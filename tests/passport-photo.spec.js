@@ -90,7 +90,8 @@ test('auto-position reserves hairline headroom rather than filling the crop', as
   expect(behavior).toContain("msg.textContent='Loading the on-device face model…'");
   expect(behavior).toContain("msg.textContent='Applying the passport framing…'");
   expect(behavior).toContain('withTimeout(imageLandmarker(),20000');
-  expect(behavior.match(/await detectPreview/g)).toHaveLength(1);
+  expect(behavior).toContain("m=await detectPreview(text=>{msg.textContent=text})");
+  expect(behavior).not.toContain('verified=await detectPreview');
   expect(behavior).not.toContain('for(let pass=0;pass<3;pass++)');
 });
 
