@@ -6,7 +6,7 @@
 }
 
 @layer tool-base {
-  html { background:var(--tool-bg);font-family:var(--tool-font) }
+  html { background:var(--tool-bg);font-family:var(--tool-font);overflow-x:hidden }
   body.tool-page { min-width:320px;background:var(--tool-bg);color:var(--tool-fg);overflow-x:hidden;transition:background .2s,color .2s }
   body.tool-page::before,body.tool-page::after { content:"";position:fixed;z-index:-1;width:28rem;height:28rem;border-radius:50%;filter:blur(90px);pointer-events:none;opacity:.32 }
   body.tool-page::before { top:-14rem;left:-12rem;background:var(--tool-accent) }
