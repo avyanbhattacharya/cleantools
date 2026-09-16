@@ -3,6 +3,10 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
+    "dev": "npm run sync:static && astro dev",
+    "build": "npm run build:docs && npm run sync:static && astro build",
+    "preview": "vite preview dist",
+    "sync:static": "node scripts/sync-astro-public.js",
     "build:docs": "node scripts/build-docs.js --write",
     "check:docs": "node scripts/build-docs.js --check",
     "test:docs": "node --test tests/static/docs-build.test.js",
@@ -21,6 +25,7 @@
     "test:report": "playwright show-report"
   },
   "devDependencies": {
-    "@playwright/test": "1.62.1"
+    "@playwright/test": "1.62.1",
+    "astro": "7.3.2"
   }
 }

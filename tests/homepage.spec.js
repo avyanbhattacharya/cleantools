@@ -21,6 +21,12 @@ test('homepage presents the private-local story, catalog, and browser navigation
   await expect(page.getByRole('heading', { name: /useful file tools/i })).toBeVisible();
   await expect(page.getByText('Your files never leave your machine.', { exact: true }).first()).toBeVisible();
   await expect(page.getByLabel('Your file stays on this device')).toBeVisible();
+  const themeToggle = page.getByRole('button', { name: /switch color theme/i });
+  await expect(themeToggle).toBeVisible();
+  await themeToggle.click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   await expect(page.getByRole('heading', { name: /popular tools/i })).toBeVisible();
 
   for (const linkName of catalogLinks) {
