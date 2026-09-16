@@ -21,11 +21,11 @@
 @layer tool-components {
   .tool-shell-visually-hidden { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0 }
   .tool-shell-header { position:relative;z-index:10;border-bottom:1px solid var(--tool-border);background:color-mix(in srgb,var(--tool-bg) 82%,transparent);backdrop-filter:blur(16px) saturate(130%) }
-  .tool-shell-wrap { width:min(100% - 40px,1040px);min-height:64px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:1rem }
+  .tool-shell-wrap { width:calc(100% - 40px);max-width:1040px;min-height:64px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:1rem }
   .tool-shell-brand { color:var(--tool-fg);font-size:1rem;font-weight:700;text-decoration:none;letter-spacing:-.02em }
   .tool-shell-header nav { display:flex;align-items:center;gap:1rem }
   .tool-shell-header nav>a { color:var(--tool-muted);font-size:.88rem;text-decoration:none }
   .theme-toggle { display:grid;place-items:center;width:2.25rem;height:2.25rem;border:1px solid var(--tool-border);border-radius:50%!important;background:color-mix(in srgb,var(--tool-surface) 72%,transparent);color:var(--tool-fg);cursor:pointer }
   .theme-toggle:hover { color:var(--tool-accent);border-color:var(--tool-accent) }
-  @media (max-width:600px) { .tool-shell-wrap { width:min(100% - 28px,1040px);min-height:56px } }
+  @media (max-width:600px) { .tool-shell-wrap { width:calc(100% - 28px);min-height:56px } }
 }
