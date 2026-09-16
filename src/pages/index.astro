@@ -1,14 +1,18 @@
 ---
 import fs from 'node:fs';
 import path from 'node:path';
+import '../styles/home.css';
 
 const source = fs.readFileSync(path.resolve(process.cwd(), 'index.html'), 'utf8');
 const head = source.match(/<head>([\s\S]*?)<\/head>/i)?.[1] || '';
-const body = source.match(/<body>([\s\S]*?)<\/body>/i)?.[1] || '';
+const originalBody = source.match(/<body>([\s\S]*?)<\/body>/i)?.[1] || '';
+const header = `<header class="topbar"><div class="wrap"><a class="brand" href="/" aria-label="Clean Local Tools home"><span aria-hidden="true"></span>Clean Local Tools</a><nav class="topnav" aria-label="Primary navigation"><a href="#popular-tools">Tools</a><a href="#why">Why local</a><a href="https://github.com/avyanbhattacharya/passport-photo-web">GitHub</a><button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme"><span aria-hidden="true">☼</span></button></nav></div></header>`;
+const body = originalBody.replace(/<header class="topbar">[\s\S]*?<\/header>/, header);
 ---
 
 <!doctype html>
 <html lang="en">
-  <head><Fragment set:html={head} /></head>
+  <head><Fragment set:html={head} /><script is:inline>const savedTheme=localStorage.getItem('clean-local-theme');document.documentElement.dataset.theme=savedTheme||((matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light');</script></head>
   <body><Fragment set:html={body} /></body>
+  <script is:inline>document.querySelector('.theme-toggle')?.addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('clean-local-theme',next);});</script>
 </html>
