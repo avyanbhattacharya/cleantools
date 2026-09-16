@@ -36,6 +36,11 @@ export function loadLegacyTool(route, file = 'index.html') {
   const source = fs.readFileSync(path.resolve(process.cwd(), route, file), 'utf8');
   const rawHead = source.match(/<head[^>]*>([\s\S]*?)<\/head>/i)?.[1] || '';
   const rawBody = source.match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1] || '';
+  const legacyHeader = rawBody.match(/<header\b[\s\S]*?<\/header>/i)?.[0] || '';
+  const legacyHeading = legacyHeader.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1]
+    ?.replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .trim();
   const sourceDir = path.resolve(process.cwd(), route);
   let styles = '';
   const head = rawHead.replace(
@@ -57,5 +62,5 @@ export function loadLegacyTool(route, file = 'index.html') {
     }
   );
   const body = rawBody.replace(/<header\b[\s\S]*?<\/header>/i, '');
-  return { head, styles, body };
+  return { head, styles, body, legacyHeading };
 }

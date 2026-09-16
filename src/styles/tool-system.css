@@ -19,6 +19,7 @@
 }
 
 @layer tool-components {
+  .tool-shell-visually-hidden { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0 }
   .tool-shell-header { position:relative;z-index:10;border-bottom:1px solid var(--tool-border);background:color-mix(in srgb,var(--tool-bg) 82%,transparent);backdrop-filter:blur(16px) saturate(130%) }
   .tool-shell-wrap { width:min(100% - 40px,1040px);min-height:64px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:1rem }
   .tool-shell-brand { color:var(--tool-fg);font-size:1rem;font-weight:700;text-decoration:none;letter-spacing:-.02em }
