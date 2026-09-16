@@ -19,3 +19,13 @@ test('Astro builds the existing homepage and passes local tool routes through un
   assert.match(homepage, /readFileSync/);
   assert.match(homepage, /set:html/);
 });
+
+test('GitHub Pages deployment publishes the generated Astro output', () => {
+  const workflow = read('.github/workflows/deploy-pages.yml');
+  assert.match(workflow, /branches: \[main\]/);
+  assert.match(workflow, /npm ci/);
+  assert.match(workflow, /npm run build/);
+  assert.match(workflow, /actions\/upload-pages-artifact@v3/);
+  assert.match(workflow, /path: dist/);
+  assert.match(workflow, /actions\/deploy-pages@v4/);
+});

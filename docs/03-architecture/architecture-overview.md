@@ -69,7 +69,7 @@ The project intentionally uses a low-infrastructure architecture:
 - no database containing user working files;
 - no server-side file-processing pipeline.
 
-GitHub Pages currently hosts production. Cloudflare currently manages the domain/DNS. Neither should be treated as part of the document-processing runtime.
+GitHub Pages currently hosts production. GitHub Actions builds the Astro site and publishes its generated `dist/` directory to Pages; that output retains the `CNAME` and `.nojekyll` files required by the existing custom domain. Cloudflare currently manages the domain/DNS. Neither should be treated as part of the document-processing runtime.
 
 ## Tool isolation
 

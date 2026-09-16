@@ -77,7 +77,7 @@ Use a small owner-approved task. Verify that the issue label starts the correct 
 
 ## Project release context
 
-Production is GitHub Pages at `https://cleanlocaltools.com/`, sourced from `main`. Cloudflare Pages provides branch previews; use the deployment's actual URL. Preserve `CNAME`, `.nojekyll`, routes and existing deployment settings. GitHub Pages/Cloudflare builds and quality checks can run independently, so only green approved work should reach `main`. Repository privacy changes previously interrupted GitHub Pages publication; do not change visibility as part of feature work.
+Production is GitHub Pages at `https://cleanlocaltools.com/`, sourced from `main`. The `Deploy GitHub Pages` workflow builds the Astro site and publishes `dist/`, so changing Pages to deploy from a branch root would bypass the build and is not supported. Cloudflare Pages provides branch previews; use the deployment's actual URL. Preserve `CNAME`, `.nojekyll`, routes and existing deployment settings. GitHub Pages/Cloudflare builds and quality checks can run independently, so only green approved work should reach `main`. Repository privacy changes previously interrupted GitHub Pages publication; do not change visibility as part of feature work.
 
 ## Official capability references
 
