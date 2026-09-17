@@ -1,0 +1,34 @@
+---
+import '../../styles/tool-system.css';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="Local AI Lab: private AI modules that run on your device." />
+    <link rel="canonical" href="https://cleanlocaltools.com/local-ai-lab/" />
+    <title>Local AI Lab | Clean Local Tools</title>
+    <script is:inline>document.documentElement.dataset.theme=localStorage.getItem('clean-local-theme')||'dark';</script>
+    <style>
+      .lab-main{width:min(1040px,calc(100% - 40px));margin:auto;padding:clamp(4rem,10vw,7rem) 0 5rem}.lab-hero{max-width:46rem}.lab-kicker{color:var(--tool-accent);font-size:.78rem;font-weight:700;letter-spacing:.1em}.lab-hero h1{margin:.8rem 0 1rem;font-size:clamp(2.7rem,7vw,5rem);letter-spacing:-.045em;line-height:1.02}.lab-hero p{max-width:40rem;color:var(--tool-muted);font-size:1.1rem;line-height:1.65}.lab-privacy{margin:2rem 0 3rem;padding:1.1rem 1.25rem;border:1px solid var(--tool-privacy-border);border-radius:1rem;background:var(--tool-privacy-bg);color:var(--tool-ink)}.module-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.2rem}.module{display:block;min-height:13rem;padding:1.5rem;border:1px solid var(--tool-border);border-radius:1.25rem;background:color-mix(in srgb,var(--tool-surface) 84%,transparent);color:var(--tool-fg);text-decoration:none}.module.current{border-color:color-mix(in srgb,var(--tool-accent) 55%,var(--tool-border));box-shadow:0 .75rem 2.5rem #0000001a}.module .state{color:var(--tool-accent);font-size:.75rem;font-weight:700;letter-spacing:.08em}.module h2{margin:.6rem 0;font-size:1.35rem}.module p{margin:0;color:var(--tool-muted);line-height:1.58}.module.coming{opacity:.72}.module.coming .state{color:var(--tool-muted)}.lab-note{margin-top:2rem;color:var(--tool-muted);font-size:.9rem;line-height:1.6}.lab-note a{color:var(--tool-accent)}@media(max-width:650px){.lab-main{width:min(100% - 28px,1040px);padding-top:3.5rem}.module-grid{grid-template-columns:1fr}.module{min-height:auto}}
+    </style>
+  </head>
+  <body class="tool-page">
+    <header class="tool-shell-header"><div class="tool-shell-wrap"><a class="tool-shell-brand" href="/">Clean Local Tools</a><nav aria-label="Tool navigation"><a href="/" aria-label="All Clean Local Tools">All tools</a><button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme"><span aria-hidden="true">☼</span></button></nav></div></header>
+    <main class="lab-main">
+      <section class="lab-hero"><p class="lab-kicker">EXPERIMENTAL · LOCAL-ONLY</p><h1>Local AI Lab</h1><p>A private workspace for useful AI that runs on your device. No account, API key, or server inference.</p></section>
+      <aside class="lab-privacy"><strong>🔒 Your prompts and files stay in this browser.</strong> This Lab never falls back to cloud AI when a device cannot run a module.</aside>
+      <section class="module-grid" aria-label="Local AI Lab modules">
+        <a class="module current" href="/chatlocal/"><span class="state">AVAILABLE NOW</span><h2>Local Chat</h2><p>Choose a compatible open-weight model and keep private conversations on this device.</p></a>
+        <article class="module coming"><span class="state">PLANNED</span><h2>Models</h2><p>Understand, download, and manage compatible local models.</p></article>
+        <article class="module coming"><span class="state">PLANNED</span><h2>Files</h2><p>Ask questions about private documents without uploading them.</p></article>
+        <article class="module coming"><span class="state">PLANNED</span><h2>Workspace</h2><p>Work with local files, code, and a browser-native environment.</p></article>
+        <article class="module coming"><span class="state">PLANNED</span><h2>Agents</h2><p>Let local AI help with approved tasks while you stay in control.</p></article>
+      </section>
+      <p class="lab-note">Local AI Lab is experimental and desktop-first. <a href="/chatlocal/">Open Local Chat</a>.</p>
+    </main>
+    <script is:inline>document.querySelector('.theme-toggle')?.addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('clean-local-theme',next);});</script>
+  </body>
+</html>

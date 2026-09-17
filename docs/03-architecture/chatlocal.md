@@ -1,17 +1,23 @@
 ---
 render: true
-title: ChatLocal
-description: Architecture and operating limits for browser-local ChatLocal conversations.
+title: Local Chat (Local AI Lab)
+description: Architecture and operating limits for Local Chat, the first browser-local module in Local AI Lab.
 route: /docs/architecture/chatlocal/
 index: false
 section: Technical documentation
 ---
 
-# ChatLocal
+# Local Chat (Local AI Lab)
+
+## Product hierarchy
+
+Local Chat is the current ChatLocal route at `/chatlocal/` and the first module in **Local AI Lab** at `/local-ai-lab/`. The Lab landing page groups this experiment with planned local-first modules—Models, Files, Workspace, and Agents—without changing the existing chat route, controls, storage, or runtime contract.
+
+Local AI Lab remains experimental and separate from Clean Local Tools production. It never falls back to cloud inference or sends prompts, conversations, or working files to an application server.
 
 ## Purpose
 
-ChatLocal is a browser-local chat assistant. It loads a quantized, open-weight instruction model into the visitor's browser and runs inference through WebGPU. It has no application backend, account, API key, prompt upload, or cloud-inference fallback.
+Local Chat is a browser-local chat assistant. It loads a quantized, open-weight instruction model into the visitor's browser and runs inference through WebGPU. It has no application backend, account, API key, prompt upload, or cloud-inference fallback.
 
 ## Runtime and model policy
 

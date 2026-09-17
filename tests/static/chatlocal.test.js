@@ -8,9 +8,17 @@ const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 
 test('ChatLocal keeps its local-only model and persistence contract explicit', () => {
   const html = read('chatlocal/index.html');
+  const lab = read('src/pages/local-ai-lab/index.astro');
   const app = read('chatlocal/app.js');
   const worker = read('chatlocal/chat-worker.js');
   assert.match(html, /Your files never leave your machine\./);
+  assert.match(html, /LOCAL AI LAB · LOCAL CHAT/);
+  assert.match(html, /href="\/local-ai-lab\/"/);
+  assert.match(lab, /Local Chat/);
+  assert.match(lab, /Models/);
+  assert.match(lab, /Files/);
+  assert.match(lab, /Workspace/);
+  assert.match(lab, /Agents/);
   assert.match(html, /No hidden cloud fallback/);
   assert.match(html, /id="prepareButton"/);
   assert.match(html, /id="messages"/);

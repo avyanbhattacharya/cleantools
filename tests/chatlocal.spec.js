@@ -1,8 +1,18 @@
 const { test, expect } = require('@playwright/test');
 
+test('Local AI Lab introduces Local Chat without changing its route', async ({ page }) => {
+  await page.goto('/local-ai-lab/');
+  await expect(page.getByRole('heading', { name: /local ai lab/i })).toBeVisible();
+  await expect(page.getByRole('link', { name: /open local chat/i })).toBeVisible();
+
+  await page.getByRole('link', { name: /open local chat/i }).click();
+  await expect(page).toHaveURL(/\/chatlocal\/$/);
+  await expect(page.getByRole('heading', { name: /private ai chat that runs on your device/i })).toBeVisible();
+});
+
 test('ChatLocal presents a usable local-AI compatibility state and never enables chat before a model is ready', async ({ page }) => {
   await page.goto('/chatlocal/');
-  await expect(page.getByRole('heading', { name: /chatgpt that never leaves your laptop/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /private ai chat that runs on your device/i })).toBeVisible();
   await expect(page.locator('#promptInput')).toBeDisabled();
   await expect(page.getByRole('button', { name: /prepare private chat/i })).toBeDisabled();
   await expect(page.locator('#messages')).toContainText(/prepare a model/i);

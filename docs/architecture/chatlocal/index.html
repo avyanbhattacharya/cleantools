@@ -5,24 +5,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#ffffff">
-<meta name="description" content="Architecture and operating limits for browser-local ChatLocal conversations.">
+<meta name="description" content="Architecture and operating limits for Local Chat, the first browser-local module in Local AI Lab.">
 <meta name="robots" content="noindex,follow,noarchive">
 <link rel="canonical" href="https://cleanlocaltools.com/docs/architecture/chatlocal/">
-<meta property="og:title" content="ChatLocal | Clean Local Tools">
-<meta property="og:description" content="Architecture and operating limits for browser-local ChatLocal conversations.">
+<meta property="og:title" content="Local Chat (Local AI Lab) | Clean Local Tools">
+<meta property="og:description" content="Architecture and operating limits for Local Chat, the first browser-local module in Local AI Lab.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cleanlocaltools.com/docs/architecture/chatlocal/">
 <meta property="og:site_name" content="Clean Local Tools">
-<title>ChatLocal | Clean Local Tools</title>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"ChatLocal","description":"Architecture and operating limits for browser-local ChatLocal conversations.","url":"https://cleanlocaltools.com/docs/architecture/chatlocal/","isPartOf":{"@type":"WebSite","name":"Clean Local Tools","url":"https://cleanlocaltools.com/"}}</script>
+<title>Local Chat (Local AI Lab) | Clean Local Tools</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Local Chat (Local AI Lab)","description":"Architecture and operating limits for Local Chat, the first browser-local module in Local AI Lab.","url":"https://cleanlocaltools.com/docs/architecture/chatlocal/","isPartOf":{"@type":"WebSite","name":"Clean Local Tools","url":"https://cleanlocaltools.com/"}}</script>
 <link rel="stylesheet" href="/assets/site.css?v=a78ae1a98127">
 <link rel="stylesheet" href="/assets/docs.css?v=ab6cc24636dd">
 </head>
 <body class="docs-page docs-technical">
 <header class="topbar"><div class="wrap"><div class="brand"><a href="/">Clean Local Tools</a></div><nav class="topnav" aria-label="Primary"><a class="toplink" href="/#all-tools">All tools</a><a class="toplink" href="/about/">About</a><a class="toplink" href="/principles/">Principles</a></nav></div></header>
-<main class="doc-main"><div class="wrap"><article class="doc-article"><div class="doc-kicker">Technical documentation</div><aside class="doc-status"><strong>Technical documentation</strong><span>This page records architecture and experimental direction. It is not a user-facing tool.</span></aside><div class="doc-content"><h1 id="chatlocal">ChatLocal</h1>
+<main class="doc-main"><div class="wrap"><article class="doc-article"><div class="doc-kicker">Technical documentation</div><aside class="doc-status"><strong>Technical documentation</strong><span>This page records architecture and experimental direction. It is not a user-facing tool.</span></aside><div class="doc-content"><h1 id="local-chat-local-ai-lab">Local Chat (Local AI Lab)</h1>
+<h2 id="product-hierarchy">Product hierarchy</h2>
+<p>Local Chat is the current ChatLocal route at <code>/chatlocal/</code> and the first module in <strong>Local AI Lab</strong> at <code>/local-ai-lab/</code>. The Lab landing page groups this experiment with planned local-first modules—Models, Files, Workspace, and Agents—without changing the existing chat route, controls, storage, or runtime contract.</p>
+<p>Local AI Lab remains experimental and separate from Clean Local Tools production. It never falls back to cloud inference or sends prompts, conversations, or working files to an application server.</p>
 <h2 id="purpose">Purpose</h2>
-<p>ChatLocal is a browser-local chat assistant. It loads a quantized, open-weight instruction model into the visitor&#39;s browser and runs inference through WebGPU. It has no application backend, account, API key, prompt upload, or cloud-inference fallback.</p>
+<p>Local Chat is a browser-local chat assistant. It loads a quantized, open-weight instruction model into the visitor&#39;s browser and runs inference through WebGPU. It has no application backend, account, API key, prompt upload, or cloud-inference fallback.</p>
 <h2 id="runtime-and-model-policy">Runtime and model policy</h2>
 <ul><li>Runtime: <code>@mlc-ai/web-llm</code> version <code>0.2.85</code>, loaded from its pinned ESM package URL.</li><li>Execution: a dedicated module Web Worker uses WebLLM&#39;s worker engine handler so model loading and token generation do not block the page UI.</li><li>Default: <code>Phi-3-mini-4k-instruct-q4f16_1-MLC</code>.</li><li>Optional stronger model: <code>Mistral-7B-Instruct-v0.3-q4f16_1-MLC</code>.</li><li>Backend: WebGPU only. ChatLocal deliberately offers no CPU/WASM or remote fallback because a multi-gigabyte chat model would be an unreliable browser experience on those paths.</li></ul>
 <p>The model-selection UI makes the first-download size tradeoff explicit. Browser model assets use WebLLM&#39;s Cache API backend. A user can remove the selected cached model with the in-product control.</p>
