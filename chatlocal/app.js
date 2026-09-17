@@ -17,6 +17,7 @@ let ready = false;
 let generating = false;
 let history = [];
 let supported = false;
+let adapter = null;
 let setupStage = 'Page loaded';
 const diagnostics = [];
 
@@ -41,6 +42,37 @@ function recordDiagnostic(stage, detail, show = false) {
   diagnostics.push(`[${new Date().toISOString()}] ${stage}: ${detail}`);
   if (diagnostics.length > 30) diagnostics.shift();
   renderDiagnostics(show);
+}
+function megabytes(bytes) { return Math.round(bytes / (1024 * 1024)); }
+function modelRecord(model) { return webllm && webllm.prebuiltAppConfig && Array.isArray(webllm.prebuiltAppConfig.model_list) ? webllm.prebuiltAppConfig.model_list.find(record => record.model_id === model) : null; }
+async function probeComputePipeline(record) {
+  const required = (record && record.required_features) || [];
+  const missing = required.filter(feature => !adapter.features.has(feature));
+  if (missing.length) return { ok: false, reason: `This model requires unsupported WebGPU feature(s): ${missing.join(', ')}.` };
+  let device;
+  try {
+    device = await adapter.requestDevice({ requiredFeatures: required });
+    const usesF16 = required.includes('shader-f16');
+    const code = usesF16 ? 'enable f16; @compute @workgroup_size(1) fn main() { let value: f16 = 1.0h; }' : '@compute @workgroup_size(1) fn main() { }';
+    const module = device.createShaderModule({ code });
+    await device.createComputePipelineAsync({ layout: 'auto', compute: { module, entryPoint: 'main' } });
+    return { ok: true };
+  } catch (error) { return { ok: false, reason: `The browser could not compile a basic local compute pipeline: ${errorDetails(error).split('\n')[0]}` }; }
+  finally { if (device) device.destroy(); }
+}
+async function checkModelCompatibility() {
+  setupStage = 'Checking model compatibility'; renderDiagnostics(); setStatus('Checking local GPU compatibility before downloading a model…');
+  if (!webllm) { webllm = await import(WEBLLM_URL); recordDiagnostic('Loading WebLLM runtime', 'Pinned WebLLM module loaded for compatibility check.'); }
+  const record = modelRecord(activeModel());
+  if (!record) return { ok: false, reason: 'This model is not available in the pinned local runtime.' };
+  const limits = adapter.limits;
+  const vram = record.vram_required_MB ? `${Math.ceil(record.vram_required_MB)} MB estimated model GPU memory` : 'no model GPU-memory estimate';
+  const buffer = record.buffer_size_required_bytes;
+  recordDiagnostic(setupStage, `${activeModel()}: ${vram}; max GPU buffer ${megabytes(limits.maxBufferSize)} MB; max storage binding ${megabytes(limits.maxStorageBufferBindingSize)} MB.`);
+  if (buffer && limits.maxStorageBufferBindingSize < buffer) return { ok: false, reason: `This model needs a ${megabytes(buffer)} MB GPU storage buffer, but this browser allows ${megabytes(limits.maxStorageBufferBindingSize)} MB.` };
+  const compute = await probeComputePipeline(record);
+  if (!compute.ok) return compute;
+  return { ok: true, note: `${vram}. The browser does not reveal total available GPU memory, so this is a capability check—not a guarantee of model initialization.` };
 }
 
 function openHistoryDb() {
@@ -84,7 +116,7 @@ async function checkSupport() {
   setupStage = 'Checking browser support'; renderDiagnostics();
   history = await readHistory(); renderMessages();
   if (!usableWebGPU()) { supported = false; setReady(false); recordDiagnostic(setupStage, 'Required browser capability unavailable.', true); setStatus('This browser cannot run ChatLocal yet. It needs a secure context, WebGPU, a Web Worker, and local browser storage. No messages have been uploaded.', true); return; }
-  try { setupStage = 'Probing WebGPU adapter'; const adapter = await Promise.race([navigator.gpu.requestAdapter(), new Promise(resolve => setTimeout(() => resolve(null), 2500))]); if (!adapter) { supported = false; setReady(false); recordDiagnostic(setupStage, 'No usable adapter returned within 2.5 seconds.', true); setStatus('This browser exposes WebGPU but no usable adapter was found. ChatLocal will not send your messages to a cloud fallback.', true); return; } supported = true; setReady(false); recordDiagnostic(setupStage, 'Usable adapter found.'); setStatus('This device supports private local AI. Prepare a model to begin.'); }
+  try { setupStage = 'Probing WebGPU adapter'; adapter = await Promise.race([navigator.gpu.requestAdapter(), new Promise(resolve => setTimeout(() => resolve(null), 2500))]); if (!adapter) { supported = false; setReady(false); recordDiagnostic(setupStage, 'No usable adapter returned within 2.5 seconds.', true); setStatus('This browser exposes WebGPU but no usable adapter was found. ChatLocal will not send your messages to a cloud fallback.', true); return; } supported = true; setReady(false); recordDiagnostic(setupStage, `Usable adapter found. Max GPU buffer: ${megabytes(adapter.limits.maxBufferSize)} MB; max storage binding: ${megabytes(adapter.limits.maxStorageBufferBindingSize)} MB.`); setStatus('This browser exposes WebGPU. Model compatibility will be checked before any large download.'); }
   catch (error) { supported = false; setReady(false); recordDiagnostic(setupStage, errorDetails(error), true); setStatus('WebGPU could not start on this device. ChatLocal will not send your messages to a cloud fallback.', true); }
 }
 function progressCallback(report) { elements.progressWrap.hidden = false; const value = Number(report && report.progress); elements.progress.value = Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : 0; elements.progressText.textContent = (report && report.text) || 'Preparing local model…'; }
@@ -92,8 +124,9 @@ async function prepare() {
   if (!supported || generating) return;
   setError(''); elements.diagnostics.hidden = true; setReady(false); elements.prepare.disabled = true; elements.model.disabled = true; setupStage = 'Loading WebLLM runtime'; renderDiagnostics(); setStatus('Loading the WebLLM runtime…');
   try {
-    webllm = await import(WEBLLM_URL);
-    recordDiagnostic(setupStage, 'Pinned WebLLM module loaded.');
+    const compatibility = await checkModelCompatibility();
+    if (!compatibility.ok) throw new Error(compatibility.reason);
+    recordDiagnostic('Model compatibility', `Passed no-download preflight. ${compatibility.note}`);
     const appConfig = { ...webllm.prebuiltAppConfig, cacheBackend: 'cache' };
     setupStage = 'Starting local model worker';
     worker = new Worker(new URL('./chat-worker.js', import.meta.url), { type: 'module' });

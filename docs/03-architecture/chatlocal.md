@@ -31,7 +31,9 @@ The active conversation is retained in a same-origin IndexedDB record so it surv
 
 ## Failure behavior
 
-Before downloading the runtime, ChatLocal checks secure context, WebGPU, worker support, IndexedDB availability, and performs a bounded WebGPU adapter probe. If the probe or model initialization fails, it leaves chat disabled and says that no cloud fallback will be used. A failed model operation does not delete the conversation already stored in the browser.
+Before downloading model weights, ChatLocal checks secure context, WebGPU, worker support, IndexedDB availability, and performs a bounded WebGPU adapter probe. It then loads only the pinned runtime metadata and performs a no-download preflight for the selected model: required WebGPU features, declared storage-buffer requirement, browser-reported buffer limits, and compilation of a minimal compute pipeline. The diagnostics record the model's declared GPU-memory estimate alongside the browser-reported limits.
+
+WebGPU intentionally does not reveal total available GPU memory, and a minimal pipeline cannot prove that every complex model shader will compile. The preflight is therefore a conservative hard stop for known incompatibilities—not a guarantee that model initialization will succeed. If the preflight or model initialization fails, ChatLocal leaves chat disabled and says that no cloud fallback will be used. A failed model operation does not delete the conversation already stored in the browser.
 
 On setup failure, the page expands a local diagnostics panel. It records only runtime stages, browser capability flags, and error messages; it deliberately excludes chat messages and never transmits the report. The user can copy it for a bug report.
 

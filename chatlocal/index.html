@@ -38,7 +38,7 @@
         <progress id="modelProgress" max="1" value="0"></progress><span id="progressText">Preparing…</span>
       </div>
       <p id="modelStatus" class="status" role="status">Checking whether this browser can run local AI…</p>
-      <p class="model-note">The first download can take time and needs free device storage. Later visits reuse the browser’s local model cache when it is available.</p>
+      <p class="model-note">Before any large download, ChatLocal checks WebGPU compute support and browser-reported buffer limits against the selected model. The browser does not expose total available GPU memory, so a passed check cannot guarantee that every model will initialize.</p>
     </section>
 
     <section class="chat-card" aria-labelledby="chat-title">
