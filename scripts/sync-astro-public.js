@@ -14,7 +14,7 @@ const astroManagedToolFiles = {
   'resize-image': ['index.html'], 'split-pdf': ['index.html']
 };
 const directories = [
-  'about', 'assets', 'clean-html-printer', 'clean-pdf-printer', 'compress-pdf', 'docs',
+  'about', 'assets', 'chatlocal', 'clean-html-printer', 'clean-pdf-printer', 'compress-pdf', 'docs',
   'document-flattener', 'heic-to-jpg', 'image-to-pdf', 'japa-counter', 'merge-pdf',
   'passport-photo', 'photo-to-scan', 'principles', 'qr-code-maker', 'remove-photo-metadata',
   'resize-image', 'split-pdf'
