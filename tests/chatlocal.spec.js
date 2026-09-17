@@ -12,7 +12,7 @@ test('Local AI Lab introduces Local Chat without changing its route', async ({ p
 
 test('Local AI Lab exposes the safe Workspace module', async ({ page }) => {
   await page.goto('/local-ai-lab/');
-  await page.getByRole('link', { name: /workspace/i }).click();
+  await page.getByRole('link', { name: /available now workspace/i }).click();
   await expect(page).toHaveURL(/\/workspace\/$/);
   await expect(page.getByRole('heading', { name: /safe home for local work/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /choose workspace folder/i })).toBeVisible();
