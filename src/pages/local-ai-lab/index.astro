@@ -24,10 +24,10 @@ import '../../styles/tool-system.css';
         <a class="module current" href="/chatlocal/"><span class="state">AVAILABLE NOW</span><h2>Local Chat</h2><p>Choose a compatible open-weight model and keep private conversations on this device.</p></a>
         <article class="module coming"><span class="state">PLANNED</span><h2>Models</h2><p>Understand, download, and manage compatible local models.</p></article>
         <article class="module coming"><span class="state">PLANNED</span><h2>Files</h2><p>Ask questions about private documents without uploading them.</p></article>
-        <article class="module coming"><span class="state">PLANNED</span><h2>Workspace</h2><p>Work with local files, code, and a browser-native environment.</p></article>
+        <a class="module current" href="/workspace/"><span class="state">AVAILABLE NOW</span><h2>Workspace</h2><p>Work with one selected local folder in a safe browser-native environment.</p></a>
         <article class="module coming"><span class="state">PLANNED</span><h2>Agents</h2><p>Let local AI help with approved tasks while you stay in control.</p></article>
       </section>
-      <p class="lab-note">Local AI Lab is experimental and desktop-first. <a href="/chatlocal/">Open Local Chat</a>.</p>
+      <p class="lab-note">Local AI Lab is experimental and desktop-first. <a href="/chatlocal/">Open Local Chat</a> or <a href="/workspace/">open Workspace</a>.</p>
     </main>
     <script is:inline>document.querySelector('.theme-toggle')?.addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('clean-local-theme',next);});</script>
   </body>

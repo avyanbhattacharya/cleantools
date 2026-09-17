@@ -9,6 +9,8 @@ const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 test('ChatLocal keeps its local-only model and persistence contract explicit', () => {
   const html = read('chatlocal/index.html');
   const lab = read('src/pages/local-ai-lab/index.astro');
+  const workspace = read('src/pages/workspace/index.astro');
+  const workspaceApp = read('workspace/app.js');
   const app = read('chatlocal/app.js');
   const worker = read('chatlocal/chat-worker.js');
   assert.match(html, /Your files never leave your machine\./);
@@ -18,7 +20,14 @@ test('ChatLocal keeps its local-only model and persistence contract explicit', (
   assert.match(lab, /Models/);
   assert.match(lab, /Files/);
   assert.match(lab, /Workspace/);
+  assert.match(lab, /href="\/workspace\/"/);
   assert.match(lab, /Agents/);
+  assert.match(workspace, /Choose workspace folder/);
+  assert.match(workspace, /No uploads\. No host access\. No hidden network tools\./);
+  assert.match(workspaceApp, /showDirectoryPicker/);
+  assert.match(workspaceApp, /indexedDB\.open/);
+  assert.match(workspaceApp, /safe workspace/);
+  assert.doesNotMatch(workspaceApp, /fetch\s*\(/);
   assert.match(html, /No hidden cloud fallback/);
   assert.match(html, /id="prepareButton"/);
   assert.match(html, /id="messages"/);

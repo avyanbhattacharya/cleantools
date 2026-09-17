@@ -1,0 +1,36 @@
+<!doctype html>
+<!-- Generated from docs/03-architecture/workspace.md by scripts/build-docs.js. Do not edit directly. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="Security boundary and browser capability limits for the Local AI Lab Workspace experiment.">
+<meta name="robots" content="noindex,follow,noarchive">
+<link rel="canonical" href="https://cleanlocaltools.com/docs/architecture/workspace/">
+<meta property="og:title" content="Local AI Lab Workspace | Clean Local Tools">
+<meta property="og:description" content="Security boundary and browser capability limits for the Local AI Lab Workspace experiment.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cleanlocaltools.com/docs/architecture/workspace/">
+<meta property="og:site_name" content="Clean Local Tools">
+<title>Local AI Lab Workspace | Clean Local Tools</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Local AI Lab Workspace","description":"Security boundary and browser capability limits for the Local AI Lab Workspace experiment.","url":"https://cleanlocaltools.com/docs/architecture/workspace/","isPartOf":{"@type":"WebSite","name":"Clean Local Tools","url":"https://cleanlocaltools.com/"}}</script>
+<link rel="stylesheet" href="/assets/site.css?v=a78ae1a98127">
+<link rel="stylesheet" href="/assets/docs.css?v=ab6cc24636dd">
+</head>
+<body class="docs-page docs-technical">
+<header class="topbar"><div class="wrap"><div class="brand"><a href="/">Clean Local Tools</a></div><nav class="topnav" aria-label="Primary"><a class="toplink" href="/#all-tools">All tools</a><a class="toplink" href="/about/">About</a><a class="toplink" href="/principles/">Principles</a></nav></div></header>
+<main class="doc-main"><div class="wrap"><article class="doc-article"><div class="doc-kicker">Technical documentation</div><aside class="doc-status"><strong>Technical documentation</strong><span>This page records architecture and experimental direction. It is not a user-facing tool.</span></aside><div class="doc-content"><h1 id="local-ai-lab-workspace">Local AI Lab Workspace</h1>
+<h2 id="purpose">Purpose</h2>
+<p>Workspace is an experimental, desktop-first Local AI Lab module. It provides a small browser-native command workspace for one folder selected explicitly by the visitor. It is not an unrestricted Unix terminal and does not run commands on the visitor&#39;s operating system.</p>
+<h2 id="folder-and-persistence-boundary">Folder and persistence boundary</h2>
+<p>The user chooses a directory using the browser&#39;s File System Access API. Workspace can access only that selected directory and its children. The browser may retain the directory handle in same-origin IndexedDB so a user can reopen the same workspace; the browser can require renewed permission at any time.</p>
+<p>No other folders, installed applications, processes, browser credentials, or system settings are accessible. Disconnecting removes Workspace&#39;s saved handle only; it never changes user files.</p>
+<h2 id="command-boundary">Command boundary</h2>
+<p>The initial command allowlist is <code>pwd</code>, <code>ls</code>, <code>cat</code>, <code>head</code>, <code>wc</code>, <code>find</code>, <code>mkdir</code>, <code>touch</code>, and <code>write</code>. It contains no deletion command, package manager, shell-script runner, host-process execution, compiler/runtime, or network command. Writes happen only after a user enters a supported write command for the selected folder.</p>
+<p>There is no Homebrew, <code>curl</code>, <code>wget</code>, <code>ssh</code>, <code>sudo</code>, or arbitrary installation path. Future capability packs must be reviewed, browser-sandboxed, explicitly installed by the user, and must not widen folder or network permission.</p>
+<h2 id="privacy-and-compatibility">Privacy and compatibility</h2>
+<p>Workspace has no account, application backend, telemetry, cloud fallback, or working-file upload. It is useful only in browsers that support directory selection—current desktop Chrome and Edge are the intended initial target. Unsupported browsers, including many mobile browsers, must stop cleanly without requesting a folder or attempting a fallback.</p></div><nav class="doc-related" aria-label="Related pages"><a href="/">Home</a><a href="/about/">Mission &amp; vision</a><a href="/principles/">Principles</a></nav></article></div></main>
+<footer><div class="wrap site-footer-row"><span>© 2026 Clean Local Tools · Your files never leave your machine.</span><nav class="site-footer-nav" aria-label="Footer"><a class="toplink" href="/about/">About</a><a class="toplink" href="/principles/">Principles</a></nav></div></footer>
+</body>
+</html>
