@@ -50,6 +50,12 @@
         <div class="composer-bottom"><span id="composerHint">Local model not ready</span><button id="sendButton" class="button primary" type="submit" disabled>Send</button></div>
       </form>
       <p id="chatError" class="error" role="alert" hidden></p>
+      <details id="diagnosticsPanel" class="diagnostics" hidden>
+        <summary>Local debugging details</summary>
+        <p>These details stay in this browser and never include your chat messages.</p>
+        <pre id="diagnosticsOutput"></pre>
+        <button id="copyDiagnosticsButton" class="button quiet" type="button">Copy debugging details</button>
+      </details>
     </section>
 
     <section class="info-grid">

@@ -33,4 +33,6 @@ The active conversation is retained in a same-origin IndexedDB record so it surv
 
 Before downloading the runtime, ChatLocal checks secure context, WebGPU, worker support, IndexedDB availability, and performs a bounded WebGPU adapter probe. If the probe or model initialization fails, it leaves chat disabled and says that no cloud fallback will be used. A failed model operation does not delete the conversation already stored in the browser.
 
+On setup failure, the page expands a local diagnostics panel. It records only runtime stages, browser capability flags, and error messages; it deliberately excludes chat messages and never transmits the report. The user can copy it for a bug report.
+
 WebGPU availability is progressive enhancement for this route only; the rest of Clean Local Tools remains usable without it. The current browser tests verify the unsupported state and static tests verify the pinned runtime, worker, cache, streaming, model controls, and persistence contract. Physical-device performance, download duration, and GPU driver behavior remain manual validation items before any production release.

@@ -21,6 +21,9 @@ test('ChatLocal keeps its local-only model and persistence contract explicit', (
   assert.match(app, /CreateWebWorkerMLCEngine/);
   assert.match(app, /stream:\s*true/);
   assert.match(app, /deleteModelAllInfoInCache/);
+  assert.match(app, /Local model worker error/);
+  assert.match(html, /Local debugging details/);
+  assert.match(html, /Copy debugging details/);
   assert.doesNotMatch(app, /fetch\s*\(/);
   assert.match(worker, /WebWorkerMLCEngineHandler/);
   assert.match(worker, /@mlc-ai\/web-llm@0\.2\.85/);

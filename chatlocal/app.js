@@ -7,7 +7,7 @@ const HISTORY_STORE = 'conversations';
 
 const $ = id => document.getElementById(id);
 const elements = {
-  model: $('modelSelect'), prepare: $('prepareButton'), clearModel: $('clearModelButton'), progressWrap: $('progressWrap'), progress: $('modelProgress'), progressText: $('progressText'), status: $('modelStatus'), messages: $('messages'), composer: $('composer'), prompt: $('promptInput'), send: $('sendButton'), hint: $('composerHint'), clearConversation: $('clearConversationButton'), error: $('chatError')
+  model: $('modelSelect'), prepare: $('prepareButton'), clearModel: $('clearModelButton'), progressWrap: $('progressWrap'), progress: $('modelProgress'), progressText: $('progressText'), status: $('modelStatus'), messages: $('messages'), composer: $('composer'), prompt: $('promptInput'), send: $('sendButton'), hint: $('composerHint'), clearConversation: $('clearConversationButton'), error: $('chatError'), diagnostics: $('diagnosticsPanel'), diagnosticsOutput: $('diagnosticsOutput'), copyDiagnostics: $('copyDiagnosticsButton')
 };
 
 let webllm = null;
@@ -17,11 +17,31 @@ let ready = false;
 let generating = false;
 let history = [];
 let supported = false;
+let setupStage = 'Page loaded';
+const diagnostics = [];
 
 function activeModel() { return elements.model.value || DEFAULT_MODEL; }
 function setStatus(message, unsupported = false) { elements.status.textContent = message; elements.status.classList.toggle('unsupported', unsupported); }
 function setError(message = '') { elements.error.hidden = !message; elements.error.textContent = message; }
 function setReady(value) { ready = value; elements.prompt.disabled = !value; elements.send.disabled = !value; elements.model.disabled = generating || value; elements.prepare.disabled = !supported || generating || value; elements.clearModel.disabled = !webllm || generating; elements.hint.textContent = value ? 'Runs privately on this device' : 'Local model not ready'; }
+function errorDetails(error) {
+  if (!error) return 'No error details were supplied by the browser.';
+  if (error instanceof Error) return `${error.name}: ${error.message}${error.stack ? `\n${error.stack}` : ''}`;
+  const eventDetails = [error.type, error.message, error.filename, error.lineno && `line ${error.lineno}`, error.colno && `column ${error.colno}`, error.error && errorDetails(error.error)].filter(Boolean);
+  if (eventDetails.length) return eventDetails.join(' · ');
+  try { return JSON.stringify(error); } catch { return String(error); }
+}
+function renderDiagnostics(show = false) {
+  const capabilities = `secure context: ${Boolean(globalThis.isSecureContext)}\nWebGPU API: ${Boolean(navigator.gpu)}\nWeb Worker: ${typeof Worker !== 'undefined'}\nIndexedDB: ${typeof indexedDB !== 'undefined'}`;
+  elements.diagnosticsOutput.textContent = [`ChatLocal local diagnostics`, `Current stage: ${setupStage}`, capabilities, '', ...diagnostics].join('\n');
+  elements.diagnostics.hidden = !show;
+  if (show) elements.diagnostics.open = true;
+}
+function recordDiagnostic(stage, detail, show = false) {
+  diagnostics.push(`[${new Date().toISOString()}] ${stage}: ${detail}`);
+  if (diagnostics.length > 30) diagnostics.shift();
+  renderDiagnostics(show);
+}
 
 function openHistoryDb() {
   return new Promise((resolve, reject) => {
@@ -61,26 +81,33 @@ function renderMessages(streamingMessage = null) {
 }
 function usableWebGPU() { return Boolean(globalThis.isSecureContext && navigator.gpu && typeof Worker !== 'undefined' && typeof indexedDB !== 'undefined'); }
 async function checkSupport() {
+  setupStage = 'Checking browser support'; renderDiagnostics();
   history = await readHistory(); renderMessages();
-  if (!usableWebGPU()) { supported = false; setReady(false); setStatus('This browser cannot run ChatLocal yet. It needs a secure context, WebGPU, a Web Worker, and local browser storage. No messages have been uploaded.', true); return; }
-  try { const adapter = await Promise.race([navigator.gpu.requestAdapter(), new Promise(resolve => setTimeout(() => resolve(null), 2500))]); if (!adapter) { supported = false; setReady(false); setStatus('This browser exposes WebGPU but no usable adapter was found. ChatLocal will not send your messages to a cloud fallback.', true); return; } supported = true; setReady(false); setStatus('This device supports private local AI. Prepare a model to begin.'); }
-  catch { supported = false; setReady(false); setStatus('WebGPU could not start on this device. ChatLocal will not send your messages to a cloud fallback.', true); }
+  if (!usableWebGPU()) { supported = false; setReady(false); recordDiagnostic(setupStage, 'Required browser capability unavailable.', true); setStatus('This browser cannot run ChatLocal yet. It needs a secure context, WebGPU, a Web Worker, and local browser storage. No messages have been uploaded.', true); return; }
+  try { setupStage = 'Probing WebGPU adapter'; const adapter = await Promise.race([navigator.gpu.requestAdapter(), new Promise(resolve => setTimeout(() => resolve(null), 2500))]); if (!adapter) { supported = false; setReady(false); recordDiagnostic(setupStage, 'No usable adapter returned within 2.5 seconds.', true); setStatus('This browser exposes WebGPU but no usable adapter was found. ChatLocal will not send your messages to a cloud fallback.', true); return; } supported = true; setReady(false); recordDiagnostic(setupStage, 'Usable adapter found.'); setStatus('This device supports private local AI. Prepare a model to begin.'); }
+  catch (error) { supported = false; setReady(false); recordDiagnostic(setupStage, errorDetails(error), true); setStatus('WebGPU could not start on this device. ChatLocal will not send your messages to a cloud fallback.', true); }
 }
 function progressCallback(report) { elements.progressWrap.hidden = false; const value = Number(report && report.progress); elements.progress.value = Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : 0; elements.progressText.textContent = (report && report.text) || 'Preparing local model…'; }
 async function prepare() {
   if (!supported || generating) return;
-  setError(''); setReady(false); elements.prepare.disabled = true; elements.model.disabled = true; setStatus('Loading the WebLLM runtime…');
+  setError(''); elements.diagnostics.hidden = true; setReady(false); elements.prepare.disabled = true; elements.model.disabled = true; setupStage = 'Loading WebLLM runtime'; renderDiagnostics(); setStatus('Loading the WebLLM runtime…');
   try {
     webllm = await import(WEBLLM_URL);
+    recordDiagnostic(setupStage, 'Pinned WebLLM module loaded.');
     const appConfig = { ...webllm.prebuiltAppConfig, cacheBackend: 'cache' };
+    setupStage = 'Starting local model worker';
     worker = new Worker(new URL('./chat-worker.js', import.meta.url), { type: 'module' });
+    worker.addEventListener('error', event => recordDiagnostic('Local model worker error', errorDetails(event), true));
+    worker.addEventListener('messageerror', event => recordDiagnostic('Local model worker message error', errorDetails(event), true));
+    setupStage = 'Loading model into WebGPU';
     engine = await webllm.CreateWebWorkerMLCEngine(worker, activeModel(), { appConfig, initProgressCallback: progressCallback });
-    elements.progressWrap.hidden = true; setReady(true); setStatus('Private model ready. Replies are generated on this device.'); renderMessages(); elements.prompt.focus();
+    elements.progressWrap.hidden = true; setupStage = 'Ready'; recordDiagnostic(setupStage, `Model ready: ${activeModel()}`); setReady(true); setStatus('Private model ready. Replies are generated on this device.'); renderMessages(); elements.prompt.focus();
   } catch (error) {
     if (worker) worker.terminate(); worker = null; engine = null;
     setReady(false); elements.prepare.disabled = false; elements.model.disabled = false; elements.progressWrap.hidden = true;
+    const details = errorDetails(error); recordDiagnostic(setupStage, details, true);
     setStatus('ChatLocal could not prepare this model on this device. Your messages were not sent to a cloud service.', true);
-    setError(`Setup failed: ${error && error.message ? error.message : 'unknown local runtime error'}`);
+    setError(`Setup failed during ${setupStage}: ${details.split('\n')[0]}`);
   }
 }
 async function sendMessage(event) {
@@ -106,5 +133,11 @@ elements.prepare.addEventListener('click', prepare);
 elements.composer.addEventListener('submit', sendMessage);
 elements.clearConversation.addEventListener('click', clearHistory);
 elements.clearModel.addEventListener('click', removeModel);
+elements.copyDiagnostics.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(elements.diagnosticsOutput.textContent); elements.copyDiagnostics.textContent = 'Copied'; setTimeout(() => { elements.copyDiagnostics.textContent = 'Copy debugging details'; }, 1600); }
+  catch { elements.copyDiagnostics.textContent = 'Select the details above to copy'; }
+});
+window.addEventListener('error', event => recordDiagnostic('Page error', errorDetails(event), false));
+window.addEventListener('unhandledrejection', event => recordDiagnostic('Unhandled local promise rejection', errorDetails(event.reason), false));
 window.addEventListener('pagehide', () => { if (worker) worker.terminate(); }, { once: true });
 checkSupport();
