@@ -1,0 +1,32 @@
+---
+import '../../styles/tool-system.css';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="Local AI Lab Workspace: a safe browser-only workspace for a folder you choose." />
+    <link rel="canonical" href="https://cleanlocaltools.com/workspace/" />
+    <title>Workspace | Local AI Lab | Clean Local Tools</title>
+    <link rel="stylesheet" href="/workspace/style.css" />
+    <script is:inline>document.documentElement.dataset.theme=localStorage.getItem('clean-local-theme')||'dark';</script>
+  </head>
+  <body class="tool-page">
+    <header class="tool-shell-header"><div class="tool-shell-wrap"><a class="tool-shell-brand" href="/">Clean Local Tools</a><nav aria-label="Tool navigation"><a href="/local-ai-lab/">Local AI Lab</a><button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme"><span aria-hidden="true">☼</span></button></nav></div></header>
+    <main class="workspace-main">
+      <section class="workspace-hero"><p class="workspace-kicker">LOCAL AI LAB · WORKSPACE</p><h1>A safe home for local work.</h1><p>Choose one folder as your browser workspace. Its files stay on your device; this page cannot see anything outside that folder.</p></section>
+      <aside class="workspace-privacy"><strong>🔒 No uploads. No host access. No hidden network tools.</strong> Commands run in this page’s restricted workspace, not on your computer’s operating system.</aside>
+      <section class="workspace-panel" aria-labelledby="workspace-title">
+        <div class="workspace-bar"><div><h2 id="workspace-title">Workspace home</h2><div id="workspaceHome" class="workspace-home">No workspace selected</div></div><div class="workspace-actions"><button id="chooseWorkspace" class="workspace-button primary" type="button">Choose workspace folder</button><button id="forgetWorkspace" class="workspace-button" type="button" disabled>Disconnect</button><button id="resetTerminal" class="workspace-button" type="button">Clear terminal</button></div></div>
+        <p id="workspaceStatus" class="workspace-status" role="status">Checking browser support…</p>
+        <div id="terminalOutput" class="terminal" aria-live="polite" aria-label="Workspace terminal output"></div>
+        <form id="commandForm" class="command-form"><label for="commandInput">$</label><input id="commandInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type help" disabled /><button class="workspace-button" type="submit">Run</button></form>
+        <p class="workspace-footnote">Available: <code>pwd</code>, <code>ls</code>, <code>cat</code>, <code>head</code>, <code>wc</code>, <code>find</code>, <code>mkdir</code>, <code>touch</code>, and <code>write</code>. There is no <code>rm</code>, package installer, shell-script runner, host command, or network command.</p>
+      </section>
+    </main>
+    <script is:inline>document.querySelector('.theme-toggle')?.addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('clean-local-theme',next);});</script>
+    <script type="module" src="/workspace/app.js"></script>
+  </body>
+</html>

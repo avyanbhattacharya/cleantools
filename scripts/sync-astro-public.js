@@ -7,6 +7,7 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const publicRoot = path.join(root, 'public');
 const astroManagedToolFiles = {
+  'chatlocal': ['index.html'],
   'clean-html-printer': ['index.html'], 'clean-pdf-printer': ['index.html'], 'compress-pdf': ['index.html'],
   'document-flattener': ['index.html'], 'heic-to-jpg': ['index.html'], 'image-to-pdf': ['index.html'],
   'japa-counter': ['index.html', 'tap.html'], 'merge-pdf': ['index.html'], 'passport-photo': ['index.html'],
@@ -14,9 +15,9 @@ const astroManagedToolFiles = {
   'resize-image': ['index.html'], 'split-pdf': ['index.html']
 };
 const directories = [
-  'about', 'assets', 'clean-html-printer', 'clean-pdf-printer', 'compress-pdf', 'docs',
+  'about', 'assets', 'chatlocal', 'clean-html-printer', 'clean-pdf-printer', 'compress-pdf', 'docs',
   'document-flattener', 'heic-to-jpg', 'image-to-pdf', 'japa-counter', 'merge-pdf',
-  'passport-photo', 'photo-to-scan', 'principles', 'qr-code-maker', 'remove-photo-metadata',
+  'passport-photo', 'photo-to-scan', 'principles', 'qr-code-maker', 'remove-photo-metadata', 'workspace',
   'resize-image', 'split-pdf'
 ];
 const files = ['CNAME', 'google5f4708aeb39de005.html', 'manifest.webmanifest', 'robots.txt', 'sitemap.xml', 'sw.js', 'VERSION'];

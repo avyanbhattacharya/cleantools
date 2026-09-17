@@ -2,12 +2,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 export const toolRoutes = [
-  'clean-html-printer', 'clean-pdf-printer', 'compress-pdf', 'document-flattener',
+  'chatlocal', 'clean-html-printer', 'clean-pdf-printer', 'compress-pdf', 'document-flattener',
   'heic-to-jpg', 'image-to-pdf', 'japa-counter', 'merge-pdf', 'passport-photo',
   'photo-to-scan', 'qr-code-maker', 'remove-photo-metadata', 'resize-image', 'split-pdf'
 ];
 
 export const astroManagedToolFiles = {
+  'chatlocal': ['index.html'],
   'japa-counter': ['index.html', 'tap.html']
 };
 
