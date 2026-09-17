@@ -7,6 +7,7 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const publicRoot = path.join(root, 'public');
 const astroManagedToolFiles = {
+  'chatlocal': ['index.html'],
   'clean-html-printer': ['index.html'], 'clean-pdf-printer': ['index.html'], 'compress-pdf': ['index.html'],
   'document-flattener': ['index.html'], 'heic-to-jpg': ['index.html'], 'image-to-pdf': ['index.html'],
   'japa-counter': ['index.html', 'tap.html'], 'merge-pdf': ['index.html'], 'passport-photo': ['index.html'],

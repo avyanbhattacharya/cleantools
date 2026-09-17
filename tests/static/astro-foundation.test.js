@@ -13,6 +13,7 @@ test('Astro builds the homepage and shared-shell tool routes while preserving le
   const finalize = read('scripts/finalize-astro-output.js');
   const homepage = read('src/pages/index.astro');
   const toolRoutes = read('src/pages/[...slug].astro');
+  const legacyTools = read('src/lib/legacy-tools.js');
   const tapRoute = read('src/pages/japa-counter/tap.html.astro');
   const toolShell = read('src/components/ToolShell.astro');
   assert.equal(packageJson.devDependencies.astro, '7.3.2');
@@ -20,11 +21,13 @@ test('Astro builds the homepage and shared-shell tool routes while preserving le
   assert.match(packageJson.scripts.build, /finalize-astro-output/);
   assert.match(config, /output:\s*'static'/);
   assert.match(sync, /'passport-photo'/);
+  assert.match(sync, /'chatlocal'/);
   assert.match(sync, /'japa-counter'/);
   assert.match(homepage, /readFileSync/);
   assert.match(homepage, /set:html/);
   assert.match(toolRoutes, /getStaticPaths/);
   assert.match(toolRoutes, /toolRoutes/);
+  assert.match(legacyTools, /'chatlocal'/);
   assert.match(tapRoute, /route="japa-counter"/);
   assert.match(tapRoute, /file="tap.html"/);
   assert.match(toolShell, /Switch color theme/);
