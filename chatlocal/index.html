@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Chat with a private AI that runs on your device. Your files never leave your machine.">
+  <link rel="canonical" href="https://cleanlocaltools.com/chatlocal/">
+  <title>ChatLocal – Private AI Chat | Clean Local Tools</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar"><div class="wrap"><a class="brand" href="/">Clean Local Tools</a><a class="all" href="/">All tools</a></div></header>
+  <main class="wrap page-shell">
+    <section class="hero">
+      <p class="eyebrow">PRIVATE AI CHAT</p>
+      <h1>ChatGPT that never leaves your laptop.</h1>
+      <p>ChatLocal runs an open-weight AI model right in this browser. There is no account, API key, or server processing.</p>
+    </section>
+
+    <section class="privacy" aria-label="Privacy promise">
+      <strong>🔒 Your files never leave your machine.</strong>
+      <span>Your messages stay in this browser. The model is downloaded to this device on first use; it is not sent your prompts for inference.</span>
+    </section>
+
+    <section class="setup-card" aria-labelledby="setup-title">
+      <div><p class="section-label">LOCAL MODEL</p><h2 id="setup-title">Choose the on-device model</h2></div>
+      <label class="model-field" for="modelSelect">Model
+        <select id="modelSelect">
+          <option value="Phi-3-mini-4k-instruct-q4f16_1-MLC">Phi-3 Mini · recommended · about 2 GB</option>
+          <option value="Mistral-7B-Instruct-v0.3-q4f16_1-MLC">Mistral 7B · stronger · about 4–5 GB</option>
+        </select>
+      </label>
+      <div class="actions">
+        <button id="prepareButton" class="button primary" type="button">Prepare private chat</button>
+        <button id="clearModelButton" class="button quiet" type="button" disabled>Remove downloaded model</button>
+      </div>
+      <div class="progress-wrap" id="progressWrap" hidden>
+        <progress id="modelProgress" max="1" value="0"></progress><span id="progressText">Preparing…</span>
+      </div>
+      <p id="modelStatus" class="status" role="status">Checking whether this browser can run local AI…</p>
+      <p class="model-note">The first download can take time and needs free device storage. Later visits reuse the browser’s local model cache when it is available.</p>
+    </section>
+
+    <section class="chat-card" aria-labelledby="chat-title">
+      <div class="chat-heading"><div><p class="section-label">CHATLOCAL</p><h2 id="chat-title">Private conversation</h2></div><button id="clearConversationButton" class="button quiet" type="button">Clear conversation</button></div>
+      <div id="messages" class="messages" aria-live="polite" aria-label="Conversation"><div class="empty-state">Prepare a model to start chatting. Your conversation is stored only in this browser.</div></div>
+      <form id="composer" class="composer">
+        <label class="sr-only" for="promptInput">Message ChatLocal</label>
+        <textarea id="promptInput" rows="2" maxlength="4000" placeholder="Ask anything…" disabled></textarea>
+        <div class="composer-bottom"><span id="composerHint">Local model not ready</span><button id="sendButton" class="button primary" type="submit" disabled>Send</button></div>
+      </form>
+      <p id="chatError" class="error" role="alert" hidden></p>
+    </section>
+
+    <section class="info-grid">
+      <article><h2>Works on your device</h2><p>ChatLocal uses browser hardware acceleration when supported. A compatible Chromium-based browser and WebGPU are currently required for the model to run.</p></article>
+      <article><h2>No hidden cloud fallback</h2><p>If this browser cannot run the model, ChatLocal stops and tells you. It never switches your conversation to a remote AI service.</p></article>
+      <article><h2>Clear when you want</h2><p>Clear the conversation here, or remove the model cache to reclaim storage. Both actions affect only this browser on this device.</p></article>
+    </section>
+  </main>
+  <footer><div class="wrap">© 2026 Clean Local Tools · Your files never leave your machine.</div></footer>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
