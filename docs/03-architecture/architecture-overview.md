@@ -59,7 +59,7 @@ The website itself is delivered over the network. Some current tools also downlo
 
 The project intentionally uses a low-infrastructure architecture:
 
-- Astro static-site build output, with the existing route-based HTML/CSS/JavaScript tools migrated incrementally;
+- Astro static-site build output, with every production tool route rendered through a shared Astro shell while its browser JavaScript and route-specific markup remain intact;
 - CSS;
 - browser JavaScript;
 - browser APIs such as Canvas, File APIs, camera APIs, workers, and service workers;

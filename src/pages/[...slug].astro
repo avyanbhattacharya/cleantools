@@ -1,0 +1,12 @@
+---
+import ToolShell from '../components/ToolShell.astro';
+import { toolRoutes } from '../lib/legacy-tools.js';
+
+export function getStaticPaths() {
+  return toolRoutes.map(slug => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+---
+
+<ToolShell route={slug} />
