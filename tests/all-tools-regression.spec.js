@@ -17,6 +17,7 @@ const tools = [
   ['/heic-to-jpg/', /HEIC to JPG/i],
   ['/remove-photo-metadata/', /Remove Photo Metadata/i],
   ['/qr-code-maker/', /QR Code Maker/i],
+  ['/sheetlocal/', /SheetLocal/i],
   ['/about/', /Useful tools without surrendering your files/i],
   ['/principles/', /Principles that keep the promise honest/i]
 ];
