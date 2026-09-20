@@ -145,7 +145,7 @@ function renderProfile() {
 function renderPreview() {
   ui.previewHead.innerHTML = `<tr>${dataset.headers.map(header => `<th scope="col">${escapeHtml(header)}</th>`).join('')}</tr>`;
   ui.previewBody.innerHTML = dataset.rows.slice(0, 12).map(row => `<tr>${dataset.headers.map(header => `<td title="${escapeHtml(row[header])}">${escapeHtml(row[header])}</td>`).join('')}</tr>`).join('');
-  ui.previewCount.textContent = `Showing 12 of ${formatNumber(dataset.rows.length)} rows`;
+  ui.previewCount.textContent = `Showing ${formatNumber(Math.min(12, dataset.rows.length))} of ${formatNumber(dataset.rows.length)} rows`;
 }
 
 function evidence(entries) {
