@@ -211,7 +211,7 @@ function duplicateRows() {
   }
   const duplicates = [...seen.values()].filter(entry => entry.count > 1).sort((a, b) => b.count - a.count);
   const duplicateCount = duplicates.reduce((total, entry) => total + entry.count - 1, 0);
-  return { title: 'Duplicate rows', summary: duplicateCount ? `Found ${formatNumber(duplicateCount)} repeated row${duplicateCount === 1 ? '' : 's'} across ${duplicates.length} matching groups.` : 'No exact duplicate rows were found.', evidence: [['Matching rule', 'Every column matches'], ['Duplicate groups', formatNumber(duplicates.length)], ['Repeated rows', formatNumber(duplicateCount)]], details: duplicates.length ? table(['Repeats', ...dataset.headers.slice(0, 4)], duplicates.slice(0, 8).map(entry => [entry.count, ...dataset.headers.slice(0, 4).map(header => entry.row[header])])) : '' };
+  return { title: 'Duplicate rows', summary: duplicateCount ? `Found ${formatNumber(duplicateCount)} repeated row${duplicateCount === 1 ? '' : 's'} across ${duplicates.length} matching group${duplicates.length === 1 ? '' : 's'}.` : 'No exact duplicate rows were found.', evidence: [['Matching rule', 'Every column matches'], ['Duplicate groups', formatNumber(duplicates.length)], ['Repeated rows', formatNumber(duplicateCount)]], details: duplicates.length ? table(['Repeats', ...dataset.headers.slice(0, 4)], duplicates.slice(0, 8).map(entry => [entry.count, ...dataset.headers.slice(0, 4).map(header => entry.row[header])])) : '' };
 }
 
 function unusualValues() {
