@@ -7,7 +7,7 @@ test('SheetLocal profiles a local CSV and runs guided analyses', async ({ page }
   const externalRequests = [];
   page.on('request', request => {
     const url = new URL(request.url());
-    if (!['localhost', '127.0.0.1'].includes(url.hostname)) externalRequests.push(url.href);
+    if (['http:', 'https:'].includes(url.protocol) && !['localhost', '127.0.0.1'].includes(url.hostname)) externalRequests.push(url.href);
   });
 
   await page.goto('/sheetlocal/');
