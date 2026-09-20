@@ -22,7 +22,7 @@ test('SheetLocal profiles a local CSV and runs guided analyses', async ({ page }
 
   await page.getByRole('button', { name: 'Top categories' }).click();
   await expect(page.getByRole('heading', { name: 'Top categories' })).toBeVisible();
-  await expect(page.getByText('$2,416.00')).toBeVisible();
+  await expect(page.getByRole('cell', { name: '$2,416.00' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Find duplicates' }).click();
   await expect(page.getByText('Found 1 repeated row.')).toBeVisible();
