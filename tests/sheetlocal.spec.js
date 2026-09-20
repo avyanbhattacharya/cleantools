@@ -17,6 +17,7 @@ test('SheetLocal profiles a local CSV and runs guided analyses', async ({ page }
   await page.locator('#csvFile').setInputFiles(fixture);
   await expect(page.getByText('sheetlocal-budget.csv')).toBeVisible();
   await expect(page.getByText('10 rows')).toBeVisible();
+  await expect(page.getByText('Showing 10 of 10 rows')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Spreadsheet overview' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Top categories' }).click();
