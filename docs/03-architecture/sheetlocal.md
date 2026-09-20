@@ -29,7 +29,7 @@ The product claim is therefore specific: **your file never leaves your machine w
 
 ## Guided analysis before an LLM
 
-The first release maps a narrow vocabulary to approved deterministic analyses. For example, “find missing values” selects the missing-data action; it does not execute arbitrary SQL, generate code, or guess at an opaque calculation. This keeps results reproducible, constrains memory and performance, and lets people understand what was computed.
+V1.1 maps typed natural-language questions to the same six approved deterministic analyses. It uses a small, explicit intent catalog—not a model—to recognize everyday phrases such as “which values look unusual?”, “are there repeated transactions?”, or “how did this change over time?”. The interface reports which fixed analysis it selected. It does not execute arbitrary SQL, generate code, or guess at an opaque calculation. This keeps results reproducible, constrains memory and performance, and lets people understand what was computed.
 
 A tiny local language layer may later explain already-computed results, but it must remain optional. The spreadsheet profile and every guided action must continue to work when no model can run on the device. There is no cloud fallback.
 
@@ -37,4 +37,4 @@ A tiny local language layer may later explain already-computed results, but it m
 
 Static checks enforce the local-only architecture, the route and catalog entries, and the handbook publication. Browser coverage imports a CSV fixture, verifies the profile and guided results, tests the duplicate path, and confirms reports download locally. Existing cross-browser route smoke tests include `/sheetlocal/`.
 
-When changing this tool, retain its hard boundaries: no network transport of working files, no silent model download, bounded input size, and evidence visible alongside analysis results.
+When changing this tool, retain its hard boundaries: no network transport of working files, no silent model download, bounded input size, and evidence visible alongside analysis results. Optional local narration belongs to the V2 Lab phase and must stay behind an explicit device capability check.
