@@ -15,7 +15,7 @@ const toolContracts = [
   { id: 'heic-to-jpg', route: '/heic-to-jpg/', heading: /HEIC to JPG/i, risk: 'standard', deepSpec: 'heic-to-jpg.spec.js', visual: true },
   { id: 'remove-photo-metadata', route: '/remove-photo-metadata/', heading: /Remove Photo Metadata/i, risk: 'standard', deepSpec: 'remove-photo-metadata.spec.js', visual: true },
   { id: 'qr-code-maker', route: '/qr-code-maker/', heading: /QR Code Maker/i, risk: 'standard', deepSpec: 'qr-code-maker.spec.js', visual: true },
-  { id: 'sheetlocal', route: '/sheetlocal/', heading: /SheetLocal/i, risk: 'new-tool', deepSpec: 'sheetlocal.spec.js', visual: true, manualCheck: 'Choose a non-sensitive CSV and download one report on a desktop or mobile browser.' },
+  { id: 'sheetlocal', route: '/sheetlocal/', heading: /Understand a spreadsheet without uploading it\./i, risk: 'new-tool', deepSpec: 'sheetlocal.spec.js', visual: true, manualCheck: 'Choose a non-sensitive CSV and download one report on a desktop or mobile browser.' },
   { id: 'about', route: '/about/', heading: /Useful tools without surrendering your files/i, risk: 'standard', visual: true },
   { id: 'principles', route: '/principles/', heading: /Principles that keep the promise honest/i, risk: 'standard', visual: true }
 ];
