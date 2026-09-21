@@ -168,8 +168,14 @@
   @media(max-width:700px){
     .wrap{width:min(100% - 28px,1100px)}
     .topbar{height:60px}
-    .topnav{gap:.85rem}
-    .topnav a:nth-child(3){display:none}
+    .topbar .wrap{flex-wrap:nowrap}
+    .brand-group{min-width:0;flex:1 1 auto;gap:.65rem;flex-wrap:nowrap}
+    .brand{min-width:0;font-size:1rem}
+    .brand span{width:1.05rem;height:1.05rem}
+    .trust-pill{display:none}
+    .topnav{flex:0 0 auto;gap:.75rem}
+    .topnav a:nth-child(2),.topnav a:nth-child(3){display:none}
+    .theme-toggle{width:2.25rem;height:2.25rem}
     .hero{padding:5rem 0 3.5rem;text-align:center}
     .hero-grid{display:block}
     .hero-grid>div:first-child{max-width:34rem;margin:auto}
