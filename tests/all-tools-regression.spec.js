@@ -51,6 +51,37 @@ for (const { route, heading } of toolContracts) {
   });
 }
 
+test('migrated tool surfaces stay readable in default dark theme', async ({ page }) => {
+  for (const { route } of toolContracts.filter(({ route }) => route !== '/' && route !== '/about/' && route !== '/principles/')) {
+    await page.goto(route, { waitUntil: 'domcontentloaded' });
+    const whiteSurfaces = await page.evaluate(() => {
+      const selectors = [
+        '.card', '.privacy', '.drop', '.dropzone', '.file-panel', '.settings',
+        '.metric', '.mode', '.page-tile', '.row', '.result', '.info', '.content'
+      ].join(',');
+      return [...document.querySelectorAll(selectors)]
+        .filter(el => {
+          const rect = el.getBoundingClientRect();
+          const style = getComputedStyle(el);
+          return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none';
+        })
+        .map(el => {
+          const style = getComputedStyle(el);
+          return {
+            tag: el.tagName.toLowerCase(),
+            id: el.id || '',
+            className: typeof el.className === 'string' ? el.className : '',
+            backgroundColor: style.backgroundColor,
+            color: style.color
+          };
+        })
+        .filter(item => item.backgroundColor === 'rgb(255, 255, 255)')
+        .slice(0, 8);
+    });
+    expect(whiteSurfaces, `${route} has pure-white legacy surfaces in dark theme`).toEqual([]);
+  }
+});
+
 test('public documentation pages use the composed brand layout', async ({ page }) => {
   await page.goto('/about/', { waitUntil: 'domcontentloaded' });
   const metrics = await page.evaluate(() => {

@@ -8,7 +8,7 @@ const head = (source.match(/<head>([\s\S]*?)<\/head>/i)?.[1] || '')
   .replace(/<style>[\s\S]*?<\/style>/gi, '')
   .replace(/<link[^>]+href=["'][^"']*\/assets\/site\.css[^>]*>/gi, '');
 const originalBody = source.match(/<body>([\s\S]*?)<\/body>/i)?.[1] || '';
-const header = `<header class="topbar"><div class="wrap"><a class="brand" href="/" aria-label="Clean Local Tools home"><span aria-hidden="true"></span>Clean Local Tools</a><nav class="topnav" aria-label="Primary navigation"><a href="#popular-tools">Tools</a><a href="#why">Why local</a><a href="https://github.com/avyanbhattacharya/passport-photo-web">GitHub</a><button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme"><span aria-hidden="true">☼</span></button></nav></div></header>`;
+const header = `<header class="topbar"><div class="wrap"><div class="brand-group"><a class="brand" href="/" aria-label="Clean Local Tools home"><span aria-hidden="true"></span>Clean Local Tools</a><span class="trust-pill" title="No network requests; files stay on this device" aria-label="100% on-device, zero network"><span class="trust-dot" aria-hidden="true"></span><span class="trust-text">100% On-Device · Zero Network</span></span></div><nav class="topnav" aria-label="Primary navigation"><a href="#popular-tools">Tools</a><a href="#why">Why local</a><a href="https://github.com/avyanbhattacharya/passport-photo-web">GitHub</a><button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme"><span aria-hidden="true">☼</span></button></nav></div></header>`;
 const body = originalBody.replace(/<header class="topbar">[\s\S]*?<\/header>/, header);
 ---
 
@@ -17,4 +17,27 @@ const body = originalBody.replace(/<header class="topbar">[\s\S]*?<\/header>/, h
   <head><Fragment set:html={head} /><script is:inline>document.documentElement.dataset.theme=localStorage.getItem('clean-local-theme')||'dark';</script></head>
   <body><Fragment set:html={body} /></body>
   <script is:inline>document.querySelector('.theme-toggle')?.addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('clean-local-theme',next);});</script>
+  <script is:inline>{
+    const warmed = new Set();
+    const warmToolPage = href => {
+      try {
+        const url = new URL(href, location.href);
+        if (url.origin !== location.origin || url.hash || warmed.has(url.pathname)) return;
+        warmed.add(url.pathname);
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = url.pathname;
+        link.as = 'document';
+        document.head.append(link);
+      } catch {}
+    };
+    const warmFromEvent = event => {
+      const anchor = event.target.closest?.('a[href]');
+      if (anchor?.matches('.tool-card,.catalog-link')) warmToolPage(anchor.href);
+    };
+    document.addEventListener('pointerover', warmFromEvent, { passive: true });
+    document.addEventListener('touchstart', warmFromEvent, { passive: true });
+    const warmPopular = () => document.querySelectorAll('.popular-grid a[href]').forEach(anchor => warmToolPage(anchor.href));
+    (window.requestIdleCallback || (callback => setTimeout(callback, 1200)))(warmPopular, { timeout: 1800 });
+  }</script>
 </html>

@@ -1,0 +1,7 @@
+{
+  "name": "Clean Local Tools",
+  "description": "Private everyday file tools that work on your device. Your files never leave your machine. No account and no upload for processing.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
