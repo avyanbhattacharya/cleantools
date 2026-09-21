@@ -26,9 +26,9 @@
     --tool-warning: #fbbf24;
     --tool-warning-soft: #422d0b;
     --tool-warning-bg: #291a04;
-    --tool-shadow-sm: 0 1px 2px rgba(0,0,0,0.35);
-    --tool-shadow-md: 0 4px 16px -2px rgba(0,0,0,0.45);
-    --tool-shadow-lg: 0 12px 32px -4px rgba(0,0,0,0.55);
+    --tool-shadow-sm: 0 1px 2px rgba(0,0,0,0.24);
+    --tool-shadow-md: 0 3px 12px -4px rgba(0,0,0,0.34);
+    --tool-shadow-lg: 0 10px 24px -8px rgba(0,0,0,0.42);
     --tool-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     --tool-control-radius: 0.75rem;
     color-scheme: dark;
@@ -68,7 +68,7 @@
 @layer tool-base {
   html { background:var(--tool-bg);font-family:var(--tool-font);overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale }
   body.tool-page { min-width:320px;background:var(--tool-bg);color:var(--tool-fg);overflow-x:hidden;transition:background .25s ease,color .25s ease }
-  body.tool-page::before,body.tool-page::after { content:"";position:fixed;z-index:-1;width:32rem;height:32rem;border-radius:50%;filter:blur(95px);pointer-events:none;opacity:.14 }
+  body.tool-page::before,body.tool-page::after { content:"";position:fixed;z-index:-1;width:28rem;height:28rem;border-radius:50%;filter:blur(80px);pointer-events:none;opacity:.08 }
   body.tool-page::before { top:-14rem;left:-12rem;background:var(--tool-accent) }
   body.tool-page::after { right:-12rem;bottom:-16rem;background:#818cf8 }
   body.tool-page h1 { font-size:clamp(1.85rem, 4vw, 2.65rem); font-weight:700; letter-spacing:-0.035em; line-height:1.12; color:var(--tool-heading); margin:0 0 .85rem }
@@ -85,15 +85,11 @@
 
 @layer tool-components {
   .tool-shell-visually-hidden { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0 }
-  .tool-shell-header { position:sticky;top:0;z-index:30;border-bottom:1px solid var(--tool-border);background:color-mix(in srgb,var(--tool-bg) 82%,transparent);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);transition:border-color .2s ease }
+  .tool-shell-header { position:sticky;top:0;z-index:30;border-bottom:1px solid var(--tool-border);background:color-mix(in srgb,var(--tool-bg) 88%,transparent);backdrop-filter:blur(12px) saturate(120%);-webkit-backdrop-filter:blur(12px) saturate(120%);transition:border-color .2s ease }
   .tool-shell-wrap { width:calc(100% - 48px);max-width:1140px;min-height:68px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:1.25rem }
   .tool-shell-left { display:flex;align-items:center;gap:1rem;flex-wrap:wrap }
   .tool-shell-brand { color:var(--tool-heading);font-size:1.05rem;font-weight:700;text-decoration:none;letter-spacing:-.025em;transition:opacity .15s ease }
   .tool-shell-brand:hover { opacity:.9 }
-  .tool-shell-trust-badge { display:inline-flex;align-items:center;gap:.48rem;padding:.28rem .72rem;border-radius:999px;border:1px solid var(--tool-privacy-border);background:var(--tool-privacy-bg);color:var(--tool-fg);font-size:.78rem;font-weight:600;letter-spacing:-.01em;user-select:none;backdrop-filter:blur(12px);box-shadow:var(--tool-shadow-sm);transition:border-color .2s ease }
-  .tool-shell-trust-badge:hover { border-color:var(--tool-border-hover) }
-  .tool-shell-trust-dot { width:.45rem;height:.45rem;border-radius:50%;background:var(--tool-success);box-shadow:0 0 8px var(--tool-success);flex-shrink:0 }
-  .tool-shell-trust-text { color:var(--tool-fg);opacity:.95 }
   .tool-shell-header nav { display:flex;align-items:center;gap:1.25rem }
   .tool-shell-header nav>a { color:var(--tool-muted);font-size:.9rem;text-decoration:none;font-weight:550;transition:color .18s ease }
   .tool-shell-header nav>a:hover { color:var(--tool-heading) }
@@ -101,7 +97,5 @@
   .theme-toggle:hover { color:var(--tool-accent);border-color:var(--tool-accent);transform:rotate(12deg);background:var(--tool-surface) }
   @media (max-width:600px) {
     .tool-shell-wrap { width:calc(100% - 28px);min-height:58px }
-    .tool-shell-trust-text { display:none }
-    .tool-shell-trust-badge { padding:.32rem;gap:0 }
   }
 }
