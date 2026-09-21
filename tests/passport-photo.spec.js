@@ -2,6 +2,9 @@ const { test, expect } = require('@playwright/test');
 const path = require('path');
 
 test('passport photo upload reveals editor and download controls', async ({ page }) => {
+  const pageErrors = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+
   await page.goto('/passport-photo/');
   await expect(page.getByRole('link', { name: /all clean local tools/i })).toBeVisible();
 
@@ -25,6 +28,7 @@ test('passport photo upload reveals editor and download controls', async ({ page
 
   await page.getByRole('button', { name: 'Reset adjustments' }).click();
   await expect(page.locator('#brightness')).toHaveValue('0');
+  expect(pageErrors).toEqual([]);
 });
 
 
