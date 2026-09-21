@@ -29,6 +29,7 @@ const palette = {
 function tokenizeCss(css) {
   return css
     .replace(/font-family:\s*Arial,Helvetica,sans-serif/gi, 'font-family:var(--tool-font)')
+    .replace(/\b(background(?:-color)?|color):\s*white\b/gi, '$1:var(--tool-surface)')
     .replace(/#(?:[0-9a-f]{6}|[0-9a-f]{3})\b/gi, color => palette[color.toLowerCase()] || color);
 }
 
