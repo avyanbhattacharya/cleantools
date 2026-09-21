@@ -31,6 +31,16 @@
     --tool-shadow-lg: 0 10px 24px -8px rgba(0,0,0,0.42);
     --tool-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     --tool-control-radius: 0.75rem;
+    --ink: var(--tool-fg);
+    --ink-soft: var(--tool-ink);
+    --muted: var(--tool-muted);
+    --blue: var(--tool-accent);
+    --blue-soft: var(--tool-privacy-bg);
+    --blue-border: var(--tool-privacy-border);
+    --surface: var(--tool-surface);
+    --surface-alt: var(--tool-soft);
+    --border: var(--tool-border);
+    --border-soft: var(--tool-border);
     color-scheme: dark;
   }
   html[data-theme=light] {
