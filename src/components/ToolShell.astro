@@ -14,7 +14,21 @@ const tool = loadLegacyTool(route, file);
     <style is:global set:html={tool.styles} />
   </head>
   <body class="tool-page">
-    <header class="tool-shell-header"><div class="tool-shell-wrap"><a class="tool-shell-brand" href="/">Clean Local Tools</a><nav aria-label="Tool navigation"><a href="/" aria-label="All Clean Local Tools">All tools</a><button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme"><span aria-hidden="true">☼</span></button></nav></div></header>
+    <header class="tool-shell-header">
+      <div class="tool-shell-wrap">
+        <div class="tool-shell-left">
+          <a class="tool-shell-brand" href="/">Clean Local Tools</a>
+          <span class="tool-shell-trust-badge" title="No network requests; files stay on this device" aria-label="100% on-device, zero network">
+            <span class="tool-shell-trust-dot" aria-hidden="true"></span>
+            <span class="tool-shell-trust-text">100% On-Device · Zero Network</span>
+          </span>
+        </div>
+        <nav aria-label="Tool navigation">
+          <a href="/" aria-label="All Clean Local Tools">All tools</a>
+          <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme"><span aria-hidden="true">☼</span></button>
+        </nav>
+      </div>
+    </header>
     {tool.legacyHeading && <h1 class="tool-shell-visually-hidden">{tool.legacyHeading}</h1>}
     <Fragment set:html={tool.body} />
     <script is:inline>document.querySelector('.theme-toggle')?.addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('clean-local-theme',next);});</script>

@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "dev": "npm run sync:static && astro dev",
+    "dev": "npm run sync:static && astro dev --host 0.0.0.0 --port 3000",
     "build": "npm run build:docs && npm run sync:static && astro build && node scripts/finalize-astro-output.js",
     "preview": "vite preview dist",
     "sync:static": "node scripts/sync-astro-public.js",
