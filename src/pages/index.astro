@@ -1,6 +1,7 @@
 ---
 import fs from 'node:fs';
 import path from 'node:path';
+import { uiIcon } from '../lib/icons.js';
 import '../styles/global.css';
 
 const source = fs.readFileSync(path.resolve(process.cwd(), 'index.html'), 'utf8');
@@ -8,8 +9,11 @@ const head = (source.match(/<head>([\s\S]*?)<\/head>/i)?.[1] || '')
   .replace(/<style>[\s\S]*?<\/style>/gi, '')
   .replace(/<link[^>]+href=["'][^"']*\/assets\/site\.css[^>]*>/gi, '');
 const originalBody = source.match(/<body>([\s\S]*?)<\/body>/i)?.[1] || '';
-const header = `<header class="topbar"><div class="wrap"><div class="brand-group"><a class="brand" href="/" aria-label="Clean Local Tools home"><span aria-hidden="true"></span>Clean Local Tools</a><span class="trust-pill" title="No network requests; files stay on this device" aria-label="100% on-device, zero network"><span class="trust-dot" aria-hidden="true"></span><span class="trust-text">100% On-Device · Zero Network</span></span></div><nav class="topnav" aria-label="Primary navigation"><a href="#popular-tools">Tools</a><a href="#why">Why local</a><a href="https://github.com/avyanbhattacharya/passport-photo-web">GitHub</a><button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme"><span aria-hidden="true">☼</span></button></nav></div></header>`;
-const body = originalBody.replace(/<header class="topbar">[\s\S]*?<\/header>/, header);
+const siteVersion = fs.readFileSync(path.resolve(process.cwd(), 'VERSION'), 'utf8').trim();
+const header = `<header class="topbar"><div class="wrap"><div class="brand-group"><a class="brand" href="/" aria-label="Clean Local Tools home"><span aria-hidden="true"></span>Clean Local Tools</a><span class="trust-pill" title="No network requests; files stay on this device" aria-label="100% on-device, zero network"><span class="trust-dot" aria-hidden="true"></span><span class="trust-text">100% On-Device · Zero Network</span></span></div><nav class="topnav" aria-label="Primary navigation"><a href="#popular-tools">Tools</a><a href="#why">Why local</a><a href="https://github.com/avyanbhattacharya/passport-photo-web">GitHub</a><button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">${uiIcon('sun')}</button></nav></div></header>`;
+const body = originalBody
+  .replace(/<header class="topbar">[\s\S]*?<\/header>/, header)
+  .replaceAll('{{SITE_VERSION}}', siteVersion);
 ---
 
 <!doctype html>

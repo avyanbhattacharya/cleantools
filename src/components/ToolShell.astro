@@ -1,6 +1,7 @@
 ---
 import '../styles/tool-system.css';
 import { loadLegacyTool } from '../lib/legacy-tools.js';
+import { uiIcon } from '../lib/icons.js';
 
 const { route, file = 'index.html' } = Astro.props;
 const tool = loadLegacyTool(route, file);
@@ -21,7 +22,7 @@ const tool = loadLegacyTool(route, file);
         </div>
         <nav aria-label="Tool navigation">
           <a href="/" aria-label="All Clean Local Tools">All tools</a>
-          <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme"><span aria-hidden="true">☼</span></button>
+          <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme"><Fragment set:html={uiIcon('sun')} /></button>
         </nav>
       </div>
     </header>

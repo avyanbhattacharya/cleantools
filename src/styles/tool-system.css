@@ -105,6 +105,21 @@
   .tool-shell-header nav>a:hover { color:var(--tool-heading) }
   .theme-toggle { display:grid;place-items:center;width:2.35rem;height:2.35rem;border:1px solid var(--tool-border);border-radius:50%!important;background:color-mix(in srgb,var(--tool-surface) 75%,transparent);color:var(--tool-muted);cursor:pointer;transition:border-color .2s ease,color .2s ease,transform .2s ease,background-color .2s ease }
   .theme-toggle:hover { color:var(--tool-accent);border-color:var(--tool-accent);transform:rotate(12deg);background:var(--tool-surface) }
+  .theme-toggle .ui-icon { font-size:1.15rem }
+  /* Shared inline SVG icon chrome (see src/lib/icons.js). Icons are 1em so
+     they scale with the surrounding text size. */
+  .ui-icon { display:inline-flex;flex:none;vertical-align:-0.14em }
+  .ui-icon svg { display:block;width:1em;height:1em }
+  .privacy .ui-icon, .privacy-box .ui-icon { color:var(--tool-accent);font-size:1.05rem;margin-right:.35rem }
+  .button .ui-icon, button .ui-icon { font-size:1.05em;margin-right:.4em }
+  /* Light-mode primary buttons: --tool-accent (#0284c7) with white text is
+     4.1:1, just under WCAG AA. Use the darker hover token for the resting
+     state (5.9:1). Dark mode already clears AA via tokenized dark text. */
+  html[data-theme=light] body.tool-page .button.primary,
+  html[data-theme=light] body.tool-page button.primary {
+    background:var(--tool-accent-hover);
+    border-color:var(--tool-accent-hover);
+  }
   @media (max-width:600px) {
     .tool-shell-wrap { width:calc(100% - 28px);min-height:58px }
   }
