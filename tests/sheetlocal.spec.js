@@ -12,7 +12,7 @@ test('SheetLocal profiles a local CSV and runs guided analyses', async ({ page }
 
   await page.goto('/sheetlocal/');
   await expect(page.getByRole('heading', { name: 'Understand a spreadsheet without uploading it.' })).toBeVisible();
-  await expect(page.getByText('Your files never leave your machine.')).toBeVisible();
+  await expect(page.locator('aside.sheetlocal-privacy').getByText('Your files never leave your machine.')).toBeVisible();
 
   await page.locator('#csvFile').setInputFiles(fixture);
   await expect(page.getByText('sheetlocal-budget.csv')).toBeVisible();
