@@ -201,7 +201,11 @@
     .hero-copy{margin-inline:auto}
     .hero-actions{justify-content:center}
     .local-visual{margin:2.25rem auto 0}
-    .device-steps{flex-wrap:wrap;row-gap:1rem}
+    .device{padding:1rem .6rem}
+    .device-steps{flex-wrap:nowrap;gap:.4rem}
+    .device-step-icon{width:2.25rem;height:2.25rem}
+    .device-step-label{font-size:.66rem;max-width:4.6rem}
+    li.device-step-arrow{padding-top:.55rem;font-size:.9rem}
     .section{padding:3.8rem 0}
     .popular-grid,.catalog-grid,.principles,.compare{grid-template-columns:1fr}
     .section-head{align-items:start}
