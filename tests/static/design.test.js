@@ -49,3 +49,29 @@ test('shared icon set covers every tool icon used on the homepage', async () => 
     assert.ok(ICONS[name], `homepage uses unknown icon: ${name}`);
   }
 });
+
+test('theme is light-first with a color-only dark override', () => {
+  const css = fs.readFileSync(path.join(root, 'src/styles/global.css'), 'utf8');
+  const flat = css.replace(/\s+/g, '');
+  // Light is the default: :root carries the light palette.
+  assert.ok(flat.includes('--bg:#f8fafc'), ':root should default to the light background');
+  assert.ok(flat.includes('--accent:#165dff'), ':root should default to the light accent');
+  assert.ok(flat.includes('color-scheme:light'), ':root should declare color-scheme: light');
+  // Dark exists as an override with the agreed blue accent (no red).
+  assert.ok(flat.includes('html[data-theme=dark]'), 'dark theme override must exist');
+  assert.ok(flat.includes('--accent:#78a6ff'), 'dark accent must be the refined blue');
+  assert.ok(flat.includes('color-scheme:dark'), 'dark override should declare color-scheme: dark');
+  // Card shadow geometry is identical between modes: the toggle swaps colors only.
+  const shadows = flat.match(/--card-shadow:022px50px/g) || [];
+  assert.ok(shadows.length >= 2, 'card shadow geometry must be identical in both modes');
+});
+
+test('theme scripts default to light, stored choice still wins', () => {
+  for (const file of ['src/pages/index.astro', 'src/components/ToolShell.astro']) {
+    const source = fs.readFileSync(path.join(root, file), 'utf8');
+    assert.ok(
+      source.includes("localStorage.getItem('clean-local-theme')||'light'"),
+      `${file} should default to light when nothing is stored`
+    );
+  }
+});

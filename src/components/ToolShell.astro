@@ -1,33 +1,44 @@
 ---
+import fs from 'node:fs';
+import path from 'node:path';
 import '../styles/tool-system.css';
 import { loadLegacyTool } from '../lib/legacy-tools.js';
 import { uiIcon } from '../lib/icons.js';
 
 const { route, file = 'index.html' } = Astro.props;
 const tool = loadLegacyTool(route, file);
+const siteVersion = fs.readFileSync(path.resolve(process.cwd(), 'VERSION'), 'utf8').trim();
+const GITHUB_URL = 'https://github.com/avyanbhattacharya/passport-photo-web';
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <Fragment set:html={tool.head} />
-    <script is:inline>document.documentElement.dataset.theme=localStorage.getItem('clean-local-theme')||'dark';</script>
+    <script is:inline>document.documentElement.dataset.theme=localStorage.getItem('clean-local-theme')||'light';</script>
     <style is:global set:html={tool.styles} />
   </head>
   <body class="tool-page">
-    <header class="tool-shell-header">
-      <div class="tool-shell-wrap">
-        <div class="tool-shell-left">
-          <a class="tool-shell-brand" href="/">Clean Local Tools</a>
-        </div>
-        <nav aria-label="Tool navigation">
-          <a href="/" aria-label="All Clean Local Tools">All tools</a>
+    <header class="shell-header">
+      <div class="shell-head-inner">
+        <a class="shell-brand" href="/" aria-label="All Clean Local Tools"><span class="shell-brand-mark" aria-hidden="true">C</span>Clean Local Tools</a>
+        <nav class="shell-nav-links" aria-label="Primary navigation"><a href="/#tools">Tools</a><a href="/#why">Why local</a><a href={GITHUB_URL}>GitHub</a></nav>
+        <div class="shell-nav-actions">
           <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme"><Fragment set:html={uiIcon('sun')} /></button>
-        </nav>
+          <a class="shell-nav-cta" href="/#tools">Browse tools</a>
+        </div>
       </div>
     </header>
     {tool.legacyHeading && <h1 class="tool-shell-visually-hidden">{tool.legacyHeading}</h1>}
     <Fragment set:html={tool.body} />
+    <footer class="shell-footer">
+      <div class="shell-foot-inner">
+        <a class="shell-foot-brand" href="/" aria-label="Clean Local Tools home">Clean Local Tools</a>
+        <p class="shell-foot-promise"><Fragment set:html={uiIcon('lock')} /> Your files never leave your machine.</p>
+        <nav class="shell-foot-nav" aria-label="Footer"><a href="/about/">About</a><a href="/principles/">Principles</a><a href="/docs/">Docs</a><a href={GITHUB_URL}>GitHub</a><span class="shell-foot-version">v{siteVersion}</span></nav>
+      </div>
+      <p class="shell-foot-copy">© 2026 Clean Local Tools · Private tools that work on your device.{tool.legacyFooterNote ? ` ${tool.legacyFooterNote}` : ''}</p>
+    </footer>
     <script is:inline>document.querySelector('.theme-toggle')?.addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('clean-local-theme',next);});</script>
   </body>
 </html>

@@ -69,15 +69,23 @@ Avoid:
 
 ## Visual direction
 
-The shipped design system is dark-first: deep slate surfaces, light text,
-restrained sky-blue interactions, glassmorphic cards with soft borders, and
-subtle aurora background washes. A light theme is available through the header
-toggle and persists per device, but dark is the default and the design
-reference — do not flip the default without an explicit brand decision.
+The shipped design system is **Precision Light**: light-first, airy, and
+restrained. A light theme is the default; a dark theme is available through
+the header toggle and persists per device (stored choice wins, otherwise
+light). The design language is Stripe/Linear-grade refinement: generous
+whitespace, flat surfaces, hairline borders, and quiet blue accents — no
+glassmorphism, no aurora washes, no glow effects.
 
-Design tokens live in `src/styles/global.css` (site chrome) and
-`src/styles/tool-system.css` (tool pages). Legacy tool colors are mapped into
-those tokens at build time, so every tool inherits the same theme.
+Design tokens live in `src/styles/global.css` (site chrome, 19 tokens per
+mode) and `src/styles/tool-system.css` (tool pages, `--tool-*` tokens).
+Legacy tool colors are mapped into those tokens at build time, so every tool
+inherits the same theme.
+
+Dark-mode rules, agreed with the owner: the dark variant uses a refined blue
+accent (`#78a6ff`) and contains no red, rose, or crimson anywhere. The mode
+toggle swaps only colors — typography, spacing, radii, border widths, and
+shadow geometry are pixel-identical between modes (the shared card shadow is
+`0 22px 50px` in both). Do not introduce per-mode geometry changes.
 
 Iconography is a single thin-line SVG set (`src/lib/icons.js`): 24px grid,
 1.5px stroke, round caps, `currentColor`. Use it for all UI chrome — tool
@@ -86,10 +94,22 @@ icons. Privacy should feel quiet and trustworthy, not like a cybersecurity
 dashboard: the lock mark appears once per context, in accent blue, next to
 plain-language copy.
 
-Type is the system stack with a tight, consistent scale (uppercase kickers
-are used sparingly for section labels only). Spacing follows a simple rhythm:
-generous hero padding, 5rem sections on desktop, cards with 1.25rem radii and
-a 4px lift on hover.
+Type is `"Avenir Next", "Segoe UI"` and system fallbacks, with `IBM Plex Mono`
+reserved for micro-labels (eyebrow, status pill, section labels). The hero
+headline sets the tone: `clamp(44px, 5.1vw, 70px)`, weight 600, tight
+tracking. The "Why" trust section is a dark band (`--why-bg`) in both modes —
+a deliberate inversion, not a theming bug.
+
+Every tool page shares one header and footer composition with the homepage:
+the brand lockup carries the `C` brand mark in the header, and a single
+canonical footer (promise, footer nav, version, copyright) replaces each
+legacy tool's own header/footer at build time (`src/lib/legacy-tools.js`
+strips them; `src/components/ToolShell.astro` renders the shared chrome).
+Tool-specific footer notes a tool carried (e.g. passport-photo's "No
+generative face editing") are preserved in the canonical footer. Never
+reintroduce per-tool header/footer markup. The tool-header brand link keeps
+the accessible name "All Clean Local Tools" so tool pages always expose the
+link back to the full tools listing (covered by the passport-photo spec).
 
 ## Product test
 

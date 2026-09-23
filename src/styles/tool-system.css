@@ -1,36 +1,40 @@
-@layer tool-tokens,tool-base,tool-components;
+/* Precision Light for tool pages — light-first.
+   Legacy tool styles are tokenized into these --tool-* variables at build time
+   (see src/lib/legacy-tools.js), so every tool inherits the theme. The mode
+   toggle swaps only colors; shadow geometry is identical between modes. */
+@layer tool-tokens, tool-base, tool-components;
 
 @layer tool-tokens {
   :root {
-    --tool-bg: #090b0e;
-    --tool-surface: #11151c;
-    --tool-soft: #171c26;
-    --tool-fg: #f8fafc;
-    --tool-heading: #ffffff;
-    --tool-ink: #e2e8f0;
-    --tool-muted: #94a3b8;
-    --tool-subtle: #64748b;
-    --tool-border: rgba(255,255,255,0.08);
-    --tool-border-hover: rgba(255,255,255,0.18);
-    --tool-border-strong: rgba(255,255,255,0.22);
-    --tool-privacy-bg: rgba(14,35,56,0.6);
-    --tool-privacy-border: rgba(56,189,248,0.25);
-    --tool-accent: #38bdf8;
-    --tool-accent-hover: #0284c7;
-    --tool-accent-glow: rgba(56,189,248,0.25);
-    --tool-danger: #f87171;
-    --tool-danger-soft: #451a1a;
-    --tool-success: #22c55e;
-    --tool-success-soft: #143823;
-    --tool-success-bg: #0a2315;
-    --tool-warning: #fbbf24;
-    --tool-warning-soft: #422d0b;
-    --tool-warning-bg: #291a04;
-    --tool-shadow-sm: 0 1px 2px rgba(0,0,0,0.24);
-    --tool-shadow-md: 0 3px 12px -4px rgba(0,0,0,0.34);
-    --tool-shadow-lg: 0 10px 24px -8px rgba(0,0,0,0.42);
-    --tool-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --tool-control-radius: 0.75rem;
+    --tool-bg: #f8fafc;
+    --tool-surface: #ffffff;
+    --tool-soft: #eef2f7;
+    --tool-fg: #111827;
+    --tool-heading: #111827;
+    --tool-ink: #1e293b;
+    --tool-muted: #5b6474;
+    --tool-subtle: #8a94a6;
+    --tool-border: #dfe4ec;
+    --tool-border-hover: #c3ccd9;
+    --tool-border-strong: #aeb8c8;
+    --tool-privacy-bg: #edf3ff;
+    --tool-privacy-border: #c7d9fb;
+    --tool-accent: #165dff;
+    --tool-accent-hover: #0f4bce;
+    --tool-accent-glow: rgba(22, 93, 255, 0.18);
+    --tool-danger: #dc2626;
+    --tool-danger-soft: #fee2e2;
+    --tool-success: #16a34a;
+    --tool-success-soft: #dcfce7;
+    --tool-success-bg: #f0fdf4;
+    --tool-warning: #d97706;
+    --tool-warning-soft: #fef3c7;
+    --tool-warning-bg: #fffbeb;
+    --tool-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --tool-shadow-md: 0 3px 12px -4px rgba(15, 23, 42, 0.1);
+    --tool-shadow-lg: 0 10px 24px -8px rgba(15, 23, 42, 0.12);
+    --tool-font: "Avenir Next", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    --tool-control-radius: 7px;
     --ink: var(--tool-fg);
     --ink-soft: var(--tool-ink);
     --muted: var(--tool-muted);
@@ -41,86 +45,102 @@
     --surface-alt: var(--tool-soft);
     --border: var(--tool-border);
     --border-soft: var(--tool-border);
-    color-scheme: dark;
-  }
-  html[data-theme=light] {
-    --tool-bg: #f8fafc;
-    --tool-surface: #ffffff;
-    --tool-soft: #f1f5f9;
-    --tool-fg: #0f172a;
-    --tool-heading: #020617;
-    --tool-ink: #1e293b;
-    --tool-muted: #475569;
-    --tool-subtle: #64748b;
-    --tool-border: rgba(15,23,42,0.08);
-    --tool-border-hover: rgba(15,23,42,0.18);
-    --tool-border-strong: rgba(15,23,42,0.22);
-    --tool-privacy-bg: #f0f9ff;
-    --tool-privacy-border: #bae6fd;
-    --tool-accent: #0284c7;
-    --tool-accent-hover: #0369a1;
-    --tool-accent-glow: rgba(2,132,199,0.2);
-    --tool-danger: #dc2626;
-    --tool-danger-soft: #fee2e2;
-    --tool-success: #16a34a;
-    --tool-success-soft: #dcfce7;
-    --tool-success-bg: #f0fdf4;
-    --tool-warning: #d97706;
-    --tool-warning-soft: #fef3c7;
-    --tool-warning-bg: #fffbeb;
-    --tool-shadow-sm: 0 1px 3px rgba(15,23,42,0.05);
-    --tool-shadow-md: 0 4px 14px -2px rgba(15,23,42,0.08);
-    --tool-shadow-lg: 0 12px 28px -4px rgba(15,23,42,0.1);
     color-scheme: light;
+  }
+  html[data-theme=dark] {
+    --tool-bg: #0c1017;
+    --tool-surface: #141a24;
+    --tool-soft: #19253b;
+    --tool-fg: #e9edf4;
+    --tool-heading: #e9edf4;
+    --tool-ink: #cdd5e1;
+    --tool-muted: #9ba7b7;
+    --tool-subtle: #7b8798;
+    --tool-border: #293241;
+    --tool-border-hover: #3a4658;
+    --tool-border-strong: #4a586e;
+    --tool-privacy-bg: rgba(22, 93, 255, 0.12);
+    --tool-privacy-border: rgba(120, 166, 255, 0.28);
+    --tool-accent: #78a6ff;
+    --tool-accent-hover: #9db9ff;
+    --tool-accent-glow: rgba(120, 166, 255, 0.22);
+    --tool-danger: #f87171;
+    --tool-danger-soft: #451a1a;
+    --tool-success: #22c55e;
+    --tool-success-soft: #143823;
+    --tool-success-bg: #0a2315;
+    --tool-warning: #fbbf24;
+    --tool-warning-soft: #422d0b;
+    --tool-warning-bg: #291a04;
+    --tool-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --tool-shadow-md: 0 3px 12px -4px rgba(0, 0, 0, 0.4);
+    --tool-shadow-lg: 0 10px 24px -8px rgba(0, 0, 0, 0.5);
+    color-scheme: dark;
   }
 }
 
 @layer tool-base {
-  html { background:var(--tool-bg);font-family:var(--tool-font);overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale }
-  body.tool-page { min-width:320px;background:var(--tool-bg);color:var(--tool-fg);overflow-x:hidden;transition:background .25s ease,color .25s ease }
-  body.tool-page::before,body.tool-page::after { content:"";position:fixed;z-index:-1;width:28rem;height:28rem;border-radius:50%;filter:blur(80px);pointer-events:none;opacity:.08 }
-  body.tool-page::before { top:-14rem;left:-12rem;background:var(--tool-accent) }
-  body.tool-page::after { right:-12rem;bottom:-16rem;background:#818cf8 }
-  body.tool-page h1 { font-size:clamp(1.85rem, 4vw, 2.65rem); font-weight:700; letter-spacing:-0.035em; line-height:1.12; color:var(--tool-heading); margin:0 0 .85rem }
-  body.tool-page h2 { font-size:clamp(1.25rem, 2.5vw, 1.65rem); font-weight:680; letter-spacing:-0.025em; color:var(--tool-heading) }
-  body.tool-page h3 { font-size:1.12rem; font-weight:650; letter-spacing:-0.015em; color:var(--tool-ink) }
-  body.tool-page p { color:var(--tool-muted); line-height:1.65 }
-  body.tool-page button,.tool-page .button,.tool-page input,.tool-page select { font-family:var(--tool-font) }
-  body.tool-page button,.tool-page .button,.tool-page input:not([type=range]),.tool-page select { border-radius:var(--tool-control-radius)!important }
-  body.tool-page .button,.tool-page button { transition:transform .2s cubic-bezier(.16,1,.3,1),box-shadow .2s ease,border-color .2s ease }
-  body.tool-page .button:hover,.tool-page button:hover:not(:disabled) { transform:translateY(-1px); box-shadow:var(--tool-shadow-sm) }
-  body.tool-page .button:active,.tool-page button:active:not(:disabled) { transform:translateY(0) }
-  @media (prefers-reduced-motion:reduce) { body.tool-page *,body.tool-page *::before,body.tool-page *::after { animation-duration:.01ms!important;transition-duration:.01ms!important } }
+  html { background: var(--tool-bg); font-family: var(--tool-font); overflow-x: hidden; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  body.tool-page { min-width: 320px; margin: 0; background: var(--tool-bg); color: var(--tool-fg); overflow-x: hidden; transition: background-color .32s cubic-bezier(.2,.7,.2,1), color .32s cubic-bezier(.2,.7,.2,1); }
+  ::selection { background: var(--tool-accent); color: #fff; }
+  html[data-theme=dark] ::selection { color: #09111f; }
+  body.tool-page :focus-visible { outline: 3px solid #5aa9ff; outline-offset: 3px; }
+  body.tool-page h1 { font-size: clamp(1.85rem, 4vw, 2.65rem); font-weight: 600; letter-spacing: -0.035em; line-height: 1.12; color: var(--tool-heading); margin: 0 0 .85rem; }
+  body.tool-page h2 { font-size: clamp(1.25rem, 2.5vw, 1.65rem); font-weight: 600; letter-spacing: -0.025em; color: var(--tool-heading); }
+  body.tool-page h3 { font-size: 1.12rem; font-weight: 600; letter-spacing: -0.015em; color: var(--tool-ink); }
+  body.tool-page p { color: var(--tool-muted); line-height: 1.65; }
+  body.tool-page button, .tool-page .button, .tool-page input, .tool-page select { font-family: var(--tool-font); }
+  body.tool-page button, .tool-page .button, .tool-page input:not([type=range]), .tool-page select { border-radius: var(--tool-control-radius); }
+  body.tool-page .button, .tool-page button { transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease, background-color .32s cubic-bezier(.2,.7,.2,1); }
+  body.tool-page .button:hover, .tool-page button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: var(--tool-shadow-sm); }
+  body.tool-page .button:active, .tool-page button:active:not(:disabled) { transform: translateY(0); }
+  /* Primary buttons: --tool-accent (#165dff) on white is 5.2:1, clearing WCAG
+     AA in both modes, so no per-mode override is needed. */
+  @media (prefers-reduced-motion: reduce) { body.tool-page *, body.tool-page *::before, body.tool-page *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
 }
 
 @layer tool-components {
-  .tool-shell-visually-hidden { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0 }
-  .tool-shell-header { position:sticky;top:0;z-index:30;border-bottom:1px solid var(--tool-border);background:color-mix(in srgb,var(--tool-bg) 88%,transparent);backdrop-filter:blur(12px) saturate(120%);-webkit-backdrop-filter:blur(12px) saturate(120%);transition:border-color .2s ease }
-  .tool-shell-wrap { width:calc(100% - 48px);max-width:1140px;min-height:68px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:1.25rem }
-  .tool-shell-left { display:flex;align-items:center;gap:1rem;flex-wrap:wrap }
-  .tool-shell-brand { color:var(--tool-heading);font-size:1.05rem;font-weight:700;text-decoration:none;letter-spacing:-.025em;transition:opacity .15s ease }
-  .tool-shell-brand:hover { opacity:.9 }
-  .tool-shell-header nav { display:flex;align-items:center;gap:1.25rem }
-  .tool-shell-header nav>a { color:var(--tool-muted);font-size:.9rem;text-decoration:none;font-weight:550;transition:color .18s ease }
-  .tool-shell-header nav>a:hover { color:var(--tool-heading) }
-  .theme-toggle { display:grid;place-items:center;width:2.35rem;height:2.35rem;border:1px solid var(--tool-border);border-radius:50%!important;background:color-mix(in srgb,var(--tool-surface) 75%,transparent);color:var(--tool-muted);cursor:pointer;transition:border-color .2s ease,color .2s ease,transform .2s ease,background-color .2s ease }
-  .theme-toggle:hover { color:var(--tool-accent);border-color:var(--tool-accent);transform:rotate(12deg);background:var(--tool-surface) }
-  .theme-toggle .ui-icon { font-size:1.15rem }
+  .tool-shell-visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  /* Site shell chrome on tool pages: the same header/footer composition as the
+     homepage, mapped onto --tool-* tokens. Class names use the shell-* prefix
+     so they can never collide with legacy tool styles (legacy bodies reuse
+     .wrap/.brand/footer selectors of their own). The sticky header is kept:
+     that is existing tool-page behavior, not part of the visual language. */
+  .tool-page .shell-header { position: sticky; top: 0; z-index: 30; border-bottom: 1px solid var(--tool-border); background: color-mix(in srgb, var(--tool-bg) 92%, transparent); backdrop-filter: blur(12px) saturate(120%); -webkit-backdrop-filter: blur(12px) saturate(120%); transition: border-color .32s cubic-bezier(.2,.7,.2,1), background-color .32s cubic-bezier(.2,.7,.2,1); }
+  .tool-page .shell-head-inner { width: calc(100% - 40px); max-width: 1040px; min-height: 68px; margin-inline: auto; display: flex; align-items: center; gap: 30px; }
+  .tool-page .shell-brand { margin-right: auto; display: inline-flex; align-items: center; gap: 9px; font-size: 17px; font-weight: 700; letter-spacing: -.03em; color: var(--tool-fg); text-decoration: none; transition: opacity .15s ease; }
+  .tool-page .shell-brand:hover { opacity: .9; }
+  .tool-page .shell-brand-mark { width: 22px; height: 22px; border-radius: 6px; background: var(--tool-accent); color: #fff; display: grid; place-items: center; font-size: 13px; font-weight: 700; }
+  .tool-page .shell-nav-links { display: flex; align-items: center; gap: 26px; }
+  .tool-page .shell-nav-links a { font-size: 13px; color: var(--tool-muted); text-decoration: none; transition: color .15s ease; }
+  .tool-page .shell-nav-links a:hover { color: var(--tool-fg); }
+  .tool-page .shell-nav-actions { display: flex; align-items: center; gap: 12px; }
+  .tool-page .shell-nav-cta { padding: 9px 14px; border: 1px solid var(--tool-border); border-radius: 7px; background: var(--tool-surface); font-size: 12px; font-weight: 600; color: var(--tool-fg); text-decoration: none; transition: border-color .15s ease, background-color .32s cubic-bezier(.2,.7,.2,1); }
+  .tool-page .shell-nav-cta:hover { border-color: var(--tool-accent); color: var(--tool-accent); }
+  .tool-page .shell-footer { border-top: 1px solid var(--tool-border); padding: 25px 0; margin: 0; text-align: left; color: var(--tool-muted); font-size: 11px; transition: border-color .32s cubic-bezier(.2,.7,.2,1); }
+  .tool-page .shell-foot-inner { width: calc(100% - 40px); max-width: 1040px; margin-inline: auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  .tool-page .shell-foot-brand { font-size: 13px; font-weight: 700; letter-spacing: -.02em; color: var(--tool-fg); text-decoration: none; }
+  .tool-page .shell-foot-promise { display: inline-flex; align-items: center; gap: 7px; margin: 0; font-size: 11px; color: var(--tool-muted); }
+  .tool-page .shell-foot-promise .ui-icon { color: var(--tool-accent); }
+  .tool-page .shell-foot-nav { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .tool-page .shell-foot-nav a { color: var(--tool-fg); font-size: 11px; text-decoration: none; transition: color .15s ease; }
+  .tool-page .shell-foot-nav a:hover { color: var(--tool-accent); }
+  .tool-page .shell-foot-version { border: 1px solid var(--tool-border); border-radius: 999px; padding: 3px 10px; color: var(--tool-muted); font-size: 11px; }
+  .tool-page .shell-foot-copy { width: calc(100% - 40px); max-width: 1040px; margin: 14px auto 0; font-size: 11px; color: var(--tool-muted); }
+  .theme-toggle { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--tool-border); border-radius: 50%; background: var(--tool-surface); color: var(--tool-muted); cursor: pointer; transition: border-color .2s ease, color .2s ease, background-color .32s cubic-bezier(.2,.7,.2,1); }
+  .theme-toggle:hover { color: var(--tool-accent); border-color: var(--tool-accent); }
+  .theme-toggle .ui-icon { font-size: 1.05rem; }
   /* Shared inline SVG icon chrome (see src/lib/icons.js). Icons are 1em so
      they scale with the surrounding text size. */
-  .ui-icon { display:inline-flex;flex:none;vertical-align:-0.14em }
-  .ui-icon svg { display:block;width:1em;height:1em }
-  .privacy .ui-icon, .privacy-box .ui-icon { color:var(--tool-accent);font-size:1.05rem;margin-right:.35rem }
-  .button .ui-icon, button .ui-icon { font-size:1.05em;margin-right:.4em }
-  /* Light-mode primary buttons: --tool-accent (#0284c7) with white text is
-     4.1:1, just under WCAG AA. Use the darker hover token for the resting
-     state (5.9:1). Dark mode already clears AA via tokenized dark text. */
-  html[data-theme=light] body.tool-page .button.primary,
-  html[data-theme=light] body.tool-page button.primary {
-    background:var(--tool-accent-hover);
-    border-color:var(--tool-accent-hover);
-  }
-  @media (max-width:600px) {
-    .tool-shell-wrap { width:calc(100% - 28px);min-height:58px }
+  .ui-icon { display: inline-flex; flex: none; vertical-align: -0.14em; }
+  .ui-icon svg { display: block; width: 1em; height: 1em; }
+  .privacy .ui-icon, .privacy-box .ui-icon { color: var(--tool-accent); font-size: 1.05rem; margin-right: .35rem; }
+  .button .ui-icon, button .ui-icon { font-size: 1.05em; margin-right: .4em; }
+  @media (max-width: 560px) {
+    .tool-page .shell-head-inner { width: calc(100% - 28px); min-height: 60px; gap: 16px; }
+    .tool-page .shell-nav-links { display: none; }
+    .tool-page .shell-foot-inner { width: calc(100% - 28px); display: block; }
+    .tool-page .shell-foot-nav { margin-top: 14px; }
+    .tool-page .shell-foot-copy { width: calc(100% - 28px); }
   }
 }
