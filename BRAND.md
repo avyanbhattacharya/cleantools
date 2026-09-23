@@ -69,7 +69,27 @@ Avoid:
 
 ## Visual direction
 
-Keep the current B+ design system as the baseline: white space, dark text, restrained blue interactions, simple cards and the pale-blue privacy panel. Privacy should feel quiet and trustworthy, not like a cybersecurity dashboard.
+The shipped design system is dark-first: deep slate surfaces, light text,
+restrained sky-blue interactions, glassmorphic cards with soft borders, and
+subtle aurora background washes. A light theme is available through the header
+toggle and persists per device, but dark is the default and the design
+reference — do not flip the default without an explicit brand decision.
+
+Design tokens live in `src/styles/global.css` (site chrome) and
+`src/styles/tool-system.css` (tool pages). Legacy tool colors are mapped into
+those tokens at build time, so every tool inherits the same theme.
+
+Iconography is a single thin-line SVG set (`src/lib/icons.js`): 24px grid,
+1.5px stroke, round caps, `currentColor`. Use it for all UI chrome — tool
+tiles, privacy panels, buttons, step visuals. Never use emoji as interface
+icons. Privacy should feel quiet and trustworthy, not like a cybersecurity
+dashboard: the lock mark appears once per context, in accent blue, next to
+plain-language copy.
+
+Type is the system stack with a tight, consistent scale (uppercase kickers
+are used sparingly for section labels only). Spacing follows a simple rhythm:
+generous hero padding, 5rem sections on desktop, cards with 1.25rem radii and
+a 4px lift on hover.
 
 ## Product test
 

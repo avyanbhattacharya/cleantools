@@ -109,13 +109,13 @@ footer{padding:13px 0}
   <section class="content">
     <div class="wrap">
       <div class="privacy">
-        🔒 <strong>Your files never leave your machine.</strong> Photo to Scan works with your document photo right on this device. Nothing is uploaded for processing.
+        <span class="ui-icon ui-icon--lock" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="5.5" y="10.5" width="13" height="9.5" rx="2"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/></svg></span> <strong>Your files never leave your machine.</strong> Photo to Scan works with your document photo right on this device. Nothing is uploaded for processing.
       </div>
       <div class="card" id="uploadCard">
         <div class="drop">
           <h2>Select a document photo</h2>
           <p>Choose a JPEG, PNG or WebP image file up to 15 MiB.</p>
-          <button class="button primary" id="chooseImageBtn" type="button">📷 Select Document Photo</button>
+          <button class="button primary" id="chooseImageBtn" type="button"><span class="ui-icon ui-icon--camera" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3.5" y="7.5" width="17" height="12" rx="2.5"/><circle cx="12" cy="13.5" r="3.4"/><path d="M8.5 7.5l1.3-2.2h4.4L15.5 7.5"/></svg></span> Select Document Photo</button>
         </div>
         <input class="file-input" id="fileInput" type="file" accept="image/jpeg,image/png,image/webp">
         <div class="error-msg" id="uploadError" role="alert"></div>
@@ -175,7 +175,7 @@ footer{padding:13px 0}
           <button class="button primary" id="exportPdfBtn" type="button">Download PDF</button>
         </div>
         <div class="raster-notice">
-          ℹ️ <strong>Output Notice:</strong> Exported JPEG and PDF files are image-based raster downloads and do not contain searchable text.
+          <span class="ui-icon ui-icon--info" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="12" cy="12" r="8.5"/><path d="M12 11.2v5"/><path d="M12 7.8v.3"/></svg></span> <strong>Output Notice:</strong> Exported JPEG and PDF files are image-based raster downloads and do not contain searchable text.
         </div>
         <div class="status" id="status"></div>
         <div class="error-msg" id="editorError" role="alert"></div>

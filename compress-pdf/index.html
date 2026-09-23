@@ -22,7 +22,7 @@
 <header class="topbar"><div class="wrap"><div class="brand"><a href="/">Clean Local Tools</a></div><a class="all-tools" href="/">All tools</a></div></header>
 <main class="wrap">
   <section class="hero"><h1>Compress PDF</h1><p>Reduce PDF size while keeping the best quality practical for your goal.</p></section>
-  <div class="privacy">🔒 <strong>Your files never leave your machine.</strong> This tool works with your PDF right on this device. Nothing is uploaded for processing.</div>
+  <div class="privacy"><span class="ui-icon ui-icon--lock" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="5.5" y="10.5" width="13" height="9.5" rx="2"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/></svg></span> <strong>Your files never leave your machine.</strong> This tool works with your PDF right on this device. Nothing is uploaded for processing.</div>
 
   <section class="panel" id="uploadPanel">
     <input id="fileInput" type="file" accept="application/pdf,.pdf" class="hidden">
@@ -47,7 +47,7 @@
   </section>
 
   <section class="panel result hidden" id="resultPanel" aria-live="polite">
-    <div class="check">✓</div><h2 id="resultTitle">Compression complete</h2>
+    <div class="check"><span class="ui-icon ui-icon--check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></div><h2 id="resultTitle">Compression complete</h2>
     <div class="numbers"><span id="originalSize"></span><span class="arrow">→</span><span id="newSize"></span></div>
     <div class="saving" id="savingText"></div><p class="result-note" id="resultNote"></p>
     <a class="download" id="downloadLink" href="#" download>Download compressed PDF</a><button class="another" id="anotherButton" type="button">Compress another PDF</button>
