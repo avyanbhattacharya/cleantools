@@ -107,7 +107,9 @@ legacy tool's own header/footer at build time (`src/lib/legacy-tools.js`
 strips them; `src/components/ToolShell.astro` renders the shared chrome).
 Tool-specific footer notes a tool carried (e.g. passport-photo's "No
 generative face editing") are preserved in the canonical footer. Never
-reintroduce per-tool header/footer markup.
+reintroduce per-tool header/footer markup. The tool-header brand link keeps
+the accessible name "All Clean Local Tools" so tool pages always expose the
+link back to the full tools listing (covered by the passport-photo spec).
 
 ## Product test
 
