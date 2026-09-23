@@ -25,12 +25,15 @@ test('SheetLocal is a bounded, local-only guided CSV tool', () => {
   assert.match(app, /new Worker\(/);
   assert.match(app, /URL\.createObjectURL/);
   assert.match(app, /function interpretQuestion/);
+  assert.match(app, /const QUESTION_INTENTS/);
+  assert.match(app, /does not use an AI model/);
   assert.match(app, /function topCategories/);
   assert.match(app, /function duplicateRows/);
   assert.doesNotMatch(app, /fetch\s*\(|XMLHttpRequest|WebLLM|transformers|https?:\/\//i);
   assert.match(style, /@media\(max-width:760px\)/);
   assert.match(docs, /no API request/);
   assert.match(docs, /no cloud fallback/);
+  assert.match(docs, /V1\.1 maps typed natural-language questions/);
   assert.match(homepage, /href="sheetlocal\/"/);
   assert.match(sitemap, /https:\/\/cleanlocaltools\.com\/sheetlocal\//);
   assert.match(sync, /'sheetlocal'/);

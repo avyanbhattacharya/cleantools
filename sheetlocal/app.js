@@ -37,6 +37,15 @@ const ui = {
 let dataset = null;
 let latestReport = null;
 
+const QUESTION_INTENTS = [
+  { analysis: 'duplicates', label: 'Find duplicates', patterns: [/\bduplicate(?:s|d)?\b/, /\brepeat(?:ed|s)?\b/, /\bsame (?:row|entry|record|transaction)\b/] },
+  { analysis: 'missing', label: 'Missing data', patterns: [/\bmissing\b/, /\bblank(?:s)?\b/, /\bempty\b/, /\bnot filled\b/] },
+  { analysis: 'outliers', label: 'Unusual values', patterns: [/\bunusual\b/, /\boutlier(?:s)?\b/, /\banomal(?:y|ies|ous)\b/, /\blooks? (?:odd|wrong)\b/] },
+  { analysis: 'trend', label: 'Compare periods', patterns: [/\bcompare\b/, /\bchange(?:d|s)?\b/, /\btrend(?:s)?\b/, /\bmonth(?:ly)?\b/, /\bperiod(?:s)?\b/, /\bover time\b/] },
+  { analysis: 'top', label: 'Top categories', patterns: [/\btop\b/, /\bbiggest\b/, /\blargest\b/, /\bhighest\b/, /\bmost\b/, /\bcategor(?:y|ies)\b/] },
+  { analysis: 'overview', label: 'Overview', patterns: [/\boverview\b/, /\bsummary\b/, /\bwhat(?:'s| is)? inside\b/, /\bcolumns?\b/, /\brows?\b/, /\bdescribe\b/] }
+];
+
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>'"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' })[character]);
 }
@@ -234,18 +243,12 @@ function missingData() {
 function unavailable(message) { return { title: 'More information needed', summary: message, evidence: [['Available columns', dataset.headers.join(', ')]], details: '' }; }
 
 function interpretQuestion(question) {
-  const value = question.trim().toLowerCase();
+  const value = question.trim().toLowerCase().replace(/[^a-z0-9\s']/g, ' ').replace(/\s+/g, ' ');
   if (!value) return null;
-  if (/duplicate|repeat/.test(value)) return 'duplicates';
-  if (/missing|blank|empty/.test(value)) return 'missing';
-  if (/unusual|outlier|anomal/.test(value)) return 'outliers';
-  if (/compare|change|trend|month|period/.test(value)) return 'trend';
-  if (/top|biggest|largest|categor/.test(value)) return 'top';
-  if (/overview|summary|what.*inside|columns|rows/.test(value)) return 'overview';
-  return null;
+  return QUESTION_INTENTS.find(intent => intent.patterns.some(pattern => pattern.test(value))) || null;
 }
 
-function runAnalysis(name) {
+function runAnalysis(name, recognizedIntent = null) {
   if (!dataset) return;
   const analyses = { overview, top: topCategories, trend: comparePeriods, duplicates: duplicateRows, outliers: unusualValues, missing: missingData };
   const report = analyses[name]();
@@ -254,7 +257,9 @@ function runAnalysis(name) {
   ui.resultBody.innerHTML = `<div class="sheetlocal-answer"><p>${escapeHtml(report.summary)}</p>${evidence(report.evidence)}${report.details || ''}</div>`;
   ui.download.hidden = false;
   ui.analysisButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.analysis === name)));
-  ui.questionHelp.textContent = 'The result above is calculated locally. The evidence cards show the columns and rule used.';
+  ui.questionHelp.textContent = recognizedIntent
+    ? `Recognized your question as “${recognizedIntent.label}.” The result above is calculated locally using that fixed analysis.`
+    : 'The result above is calculated locally. The evidence cards show the columns and rule used.';
 }
 
 async function loadText(text, name) {
@@ -284,9 +289,9 @@ ui.replace.addEventListener('click', () => { dataset = null; latestReport = null
 ui.analysisButtons.forEach(button => button.addEventListener('click', () => runAnalysis(button.dataset.analysis)));
 ui.askForm.addEventListener('submit', event => {
   event.preventDefault();
-  const analysis = interpretQuestion(ui.question.value);
-  if (!analysis) { ui.questionHelp.textContent = 'Try “top categories,” “compare periods,” “find duplicates,” “unusual values,” or “missing data.”'; return; }
-  runAnalysis(analysis);
+  const intent = interpretQuestion(ui.question.value);
+  if (!intent) { ui.questionHelp.textContent = 'I can map questions about top categories, periods, duplicates, unusual values, missing data, or an overview. This stays local and does not use an AI model.'; return; }
+  runAnalysis(intent.analysis, intent);
 });
 ui.download.addEventListener('click', () => {
   if (!latestReport || !dataset) return;
