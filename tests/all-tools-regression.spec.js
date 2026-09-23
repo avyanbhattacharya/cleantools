@@ -52,6 +52,12 @@ for (const { route, heading } of toolContracts) {
 }
 
 test('migrated tool surfaces stay readable in default dark theme', async ({ page }) => {
+  // This assertion targets dark mode: activate it explicitly instead of relying on
+  // whatever the default theme happens to be (light-first since the Precision Light
+  // redesign flipped the default). ToolShell reads this key on every navigation.
+  await page.addInitScript(() => {
+    try { window.localStorage.setItem('clean-local-theme', 'dark'); } catch (_) {}
+  });
   for (const { route } of toolContracts.filter(({ route }) => route !== '/' && route !== '/about/' && route !== '/principles/')) {
     await page.goto(route, { waitUntil: 'domcontentloaded' });
     const whiteSurfaces = await page.evaluate(() => {
