@@ -1,6 +1,12 @@
 ---
+import fs from 'node:fs';
+import path from 'node:path';
 import '../../styles/global.css';
 import '../../styles/sheetlocal.css';
+import { uiIcon } from '../../lib/icons.js';
+
+const siteVersion = fs.readFileSync(path.resolve(process.cwd(), 'VERSION'), 'utf8').trim();
+const GITHUB_URL = 'https://github.com/avyanbhattacharya/passport-photo-web';
 ---
 
 <!doctype html>
@@ -11,16 +17,17 @@ import '../../styles/sheetlocal.css';
     <meta name="description" content="SheetLocal analyzes CSV files on your device. Your files never leave your machine." />
     <link rel="canonical" href="https://cleanlocaltools.com/sheetlocal/" />
     <title>SheetLocal | Private CSV analysis in your browser</title>
-    <script is:inline>document.documentElement.dataset.theme=localStorage.getItem('clean-local-theme')||'dark';</script>
+    <script is:inline>document.documentElement.dataset.theme=localStorage.getItem('clean-local-theme')||'light';</script>
   </head>
   <body class="sheetlocal-page">
-    <header class="sheetlocal-header">
-      <div class="sheetlocal-wrap sheetlocal-header-inner">
-        <a class="brand" href="/" aria-label="Clean Local Tools home"><span aria-hidden="true"></span>Clean Local Tools</a>
-        <nav aria-label="SheetLocal navigation">
-          <a href="/">All tools</a>
-          <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme"><span aria-hidden="true">☼</span></button>
-        </nav>
+    <header class="site-header">
+      <div class="wrap nav">
+        <a class="brand" href="/" aria-label="Clean Local Tools home"><span class="brand-mark" aria-hidden="true">C</span>Clean Local Tools</a>
+        <nav class="nav-links" aria-label="Primary navigation"><a href="/#tools">Tools</a><a href="/#why">Why local</a><a href={GITHUB_URL}>GitHub</a></nav>
+        <div class="nav-actions">
+          <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme"><Fragment set:html={uiIcon('sun')} /></button>
+          <a class="nav-cta" href="/#tools">Browse tools</a>
+        </div>
       </div>
     </header>
 
@@ -90,6 +97,7 @@ import '../../styles/sheetlocal.css';
         </div>
       </section>
     </main>
+    <footer><div class="wrap footer-row"><a class="brand footer-brand" href="/" aria-label="Clean Local Tools home">Clean Local Tools</a><p class="footer-promise"><Fragment set:html={uiIcon('lock')} /> Your files never leave your machine.</p><nav class="footer-nav" aria-label="Footer"><a href="/about/">About</a><a href="/principles/">Principles</a><a href="/docs/">Docs</a><a href={GITHUB_URL}>GitHub</a><span class="footer-version">v{siteVersion}</span></nav></div><p class="footer-copy">© 2026 Clean Local Tools · Private tools that work on your device.</p></footer>
     <script is:inline src="/sheetlocal/app.js"></script>
     <script is:inline>document.querySelector('.theme-toggle')?.addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('clean-local-theme',next);});</script>
   </body>

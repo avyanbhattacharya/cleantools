@@ -100,6 +100,15 @@ headline sets the tone: `clamp(44px, 5.1vw, 70px)`, weight 600, tight
 tracking. The "Why" trust section is a dark band (`--why-bg`) in both modes —
 a deliberate inversion, not a theming bug.
 
+Every tool page shares one header and footer composition with the homepage:
+the brand lockup carries the `C` brand mark in the header, and a single
+canonical footer (promise, footer nav, version, copyright) replaces each
+legacy tool's own header/footer at build time (`src/lib/legacy-tools.js`
+strips them; `src/components/ToolShell.astro` renders the shared chrome).
+Tool-specific footer notes a tool carried (e.g. passport-photo's "No
+generative face editing") are preserved in the canonical footer. Never
+reintroduce per-tool header/footer markup.
+
 ## Product test
 
 Prioritize a new tool when it solves a common task involving files people may reasonably consider private, can perform the work on-device, and fits naturally into a future private document workflow.

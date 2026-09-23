@@ -42,6 +42,19 @@ export function loadLegacyTool(route, file = 'index.html') {
     ?.replace(/<[^>]+>/g, '')
     .replace(/&nbsp;/gi, ' ')
     .trim();
+  // The shell renders one canonical footer, so strip each tool's own footer.
+  // Preserve any non-boilerplate note a tool carried in its footer
+  // (e.g. passport-photo's "No generative face editing").
+  const legacyFooterText = (rawBody.match(/<footer\b[^>]*>([\s\S]*?)<\/footer>/i)?.[1] || '')
+    .replace(/<[^>]+>/g, ' ');
+  const legacyFooterNote = legacyFooterText
+    .replace(/©\s*20\d{2}/i, '')
+    .replace(/clean local tools/i, '')
+    .replace(/your files never leave your machine\.?/i, '')
+    .replace(/simple tools, private by design\.?/i, '')
+    .replace(/[·•]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
   const sourceDir = path.resolve(process.cwd(), route);
   let styles = '';
   const head = rawHead.replace(
@@ -62,6 +75,8 @@ export function loadLegacyTool(route, file = 'index.html') {
       return '';
     }
   );
-  const body = rawBody.replace(/<header\b[\s\S]*?<\/header>/i, '');
-  return { head, styles, body, legacyHeading };
+  const body = rawBody
+    .replace(/<header\b[\s\S]*?<\/header>/i, '')
+    .replace(/<footer\b[\s\S]*?<\/footer>/i, '');
+  return { head, styles, body, legacyHeading, legacyFooterNote };
 }

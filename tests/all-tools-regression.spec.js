@@ -113,3 +113,37 @@ test('public documentation pages use the composed brand layout', async ({ page }
   if (metrics.viewportWidth > 820) expect(metrics.heroColumns.split(' ').length).toBe(2);
   else expect(metrics.heroColumns.split(' ').length).toBe(1);
 });
+
+test('tool pages share one consistent header and footer', async ({ page }) => {
+  // Every tool route renders through ToolShell: same branded header (with the
+  // logo mark) and one canonical footer, replacing each legacy tool's own
+  // header/footer. SheetLocal is Astro-managed but uses the same site chrome.
+  const routes = ['/clean-html-printer/', '/passport-photo/', '/japa-counter/', '/japa-counter/tap.html', '/qr-code-maker/', '/sheetlocal/'];
+  for (const route of routes) {
+    await page.goto(route, { waitUntil: 'domcontentloaded' });
+    const metrics = await page.evaluate(() => {
+      const header = document.querySelector('header.site-header, header.shell-header');
+      const mark = header?.querySelector('.brand-mark, .shell-brand-mark');
+      const markBox = mark?.getBoundingClientRect();
+      const footers = [...document.querySelectorAll('body > footer')];
+      const legacyTopbar = document.querySelector('header.topbar');
+      return {
+        hasHeader: Boolean(header),
+        markText: mark?.textContent?.trim(),
+        markVisible: markBox ? markBox.width > 10 && markBox.height > 10 : false,
+        footerCount: footers.length,
+        footerText: footers[0]?.textContent || '',
+        hasLegacyTopbar: Boolean(legacyTopbar)
+      };
+    });
+    expect(metrics.hasHeader, `${route} header`).toBe(true);
+    expect(metrics.markText, `${route} logo mark`).toBe('C');
+    expect(metrics.markVisible, `${route} logo mark visible`).toBe(true);
+    expect(metrics.footerCount, `${route} footer count`).toBe(1);
+    expect(metrics.footerText, `${route} footer promise`).toContain('Your files never leave your machine.');
+    expect(metrics.hasLegacyTopbar, `${route} legacy header stripped`).toBe(false);
+  }
+  // A tool-specific footer note must survive the footer consolidation.
+  await page.goto('/passport-photo/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('footer')).toContainText('No generative face editing');
+});

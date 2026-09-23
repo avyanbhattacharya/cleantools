@@ -101,14 +101,32 @@
 
 @layer tool-components {
   .tool-shell-visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-  .tool-shell-header { position: sticky; top: 0; z-index: 30; border-bottom: 1px solid var(--tool-border); background: color-mix(in srgb, var(--tool-bg) 92%, transparent); backdrop-filter: blur(12px) saturate(120%); -webkit-backdrop-filter: blur(12px) saturate(120%); transition: border-color .32s cubic-bezier(.2,.7,.2,1), background-color .32s cubic-bezier(.2,.7,.2,1); }
-  .tool-shell-wrap { width: calc(100% - 40px); max-width: 1040px; min-height: 68px; margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; }
-  .tool-shell-left { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-  .tool-shell-brand { color: var(--tool-heading); font-size: 17px; font-weight: 700; text-decoration: none; letter-spacing: -.03em; transition: opacity .15s ease; }
-  .tool-shell-brand:hover { opacity: .9; }
-  .tool-shell-header nav { display: flex; align-items: center; gap: 1.25rem; }
-  .tool-shell-header nav > a { color: var(--tool-muted); font-size: 13px; text-decoration: none; font-weight: 500; transition: color .18s ease; }
-  .tool-shell-header nav > a:hover { color: var(--tool-heading); }
+  /* Site shell chrome on tool pages: the same header/footer composition as the
+     homepage, mapped onto --tool-* tokens. Class names use the shell-* prefix
+     so they can never collide with legacy tool styles (legacy bodies reuse
+     .wrap/.brand/footer selectors of their own). The sticky header is kept:
+     that is existing tool-page behavior, not part of the visual language. */
+  .tool-page .shell-header { position: sticky; top: 0; z-index: 30; border-bottom: 1px solid var(--tool-border); background: color-mix(in srgb, var(--tool-bg) 92%, transparent); backdrop-filter: blur(12px) saturate(120%); -webkit-backdrop-filter: blur(12px) saturate(120%); transition: border-color .32s cubic-bezier(.2,.7,.2,1), background-color .32s cubic-bezier(.2,.7,.2,1); }
+  .tool-page .shell-head-inner { width: calc(100% - 40px); max-width: 1040px; min-height: 68px; margin-inline: auto; display: flex; align-items: center; gap: 30px; }
+  .tool-page .shell-brand { margin-right: auto; display: inline-flex; align-items: center; gap: 9px; font-size: 17px; font-weight: 700; letter-spacing: -.03em; color: var(--tool-fg); text-decoration: none; transition: opacity .15s ease; }
+  .tool-page .shell-brand:hover { opacity: .9; }
+  .tool-page .shell-brand-mark { width: 22px; height: 22px; border-radius: 6px; background: var(--tool-accent); color: #fff; display: grid; place-items: center; font-size: 13px; font-weight: 700; }
+  .tool-page .shell-nav-links { display: flex; align-items: center; gap: 26px; }
+  .tool-page .shell-nav-links a { font-size: 13px; color: var(--tool-muted); text-decoration: none; transition: color .15s ease; }
+  .tool-page .shell-nav-links a:hover { color: var(--tool-fg); }
+  .tool-page .shell-nav-actions { display: flex; align-items: center; gap: 12px; }
+  .tool-page .shell-nav-cta { padding: 9px 14px; border: 1px solid var(--tool-border); border-radius: 7px; background: var(--tool-surface); font-size: 12px; font-weight: 600; color: var(--tool-fg); text-decoration: none; transition: border-color .15s ease, background-color .32s cubic-bezier(.2,.7,.2,1); }
+  .tool-page .shell-nav-cta:hover { border-color: var(--tool-accent); color: var(--tool-accent); }
+  .tool-page .shell-footer { border-top: 1px solid var(--tool-border); padding: 25px 0; margin: 0; text-align: left; color: var(--tool-muted); font-size: 11px; transition: border-color .32s cubic-bezier(.2,.7,.2,1); }
+  .tool-page .shell-foot-inner { width: calc(100% - 40px); max-width: 1040px; margin-inline: auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  .tool-page .shell-foot-brand { font-size: 13px; font-weight: 700; letter-spacing: -.02em; color: var(--tool-fg); text-decoration: none; }
+  .tool-page .shell-foot-promise { display: inline-flex; align-items: center; gap: 7px; margin: 0; font-size: 11px; color: var(--tool-muted); }
+  .tool-page .shell-foot-promise .ui-icon { color: var(--tool-accent); }
+  .tool-page .shell-foot-nav { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .tool-page .shell-foot-nav a { color: var(--tool-fg); font-size: 11px; text-decoration: none; transition: color .15s ease; }
+  .tool-page .shell-foot-nav a:hover { color: var(--tool-accent); }
+  .tool-page .shell-foot-version { border: 1px solid var(--tool-border); border-radius: 999px; padding: 3px 10px; color: var(--tool-muted); font-size: 11px; }
+  .tool-page .shell-foot-copy { width: calc(100% - 40px); max-width: 1040px; margin: 14px auto 0; font-size: 11px; color: var(--tool-muted); }
   .theme-toggle { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--tool-border); border-radius: 50%; background: var(--tool-surface); color: var(--tool-muted); cursor: pointer; transition: border-color .2s ease, color .2s ease, background-color .32s cubic-bezier(.2,.7,.2,1); }
   .theme-toggle:hover { color: var(--tool-accent); border-color: var(--tool-accent); }
   .theme-toggle .ui-icon { font-size: 1.05rem; }
@@ -118,7 +136,11 @@
   .ui-icon svg { display: block; width: 1em; height: 1em; }
   .privacy .ui-icon, .privacy-box .ui-icon { color: var(--tool-accent); font-size: 1.05rem; margin-right: .35rem; }
   .button .ui-icon, button .ui-icon { font-size: 1.05em; margin-right: .4em; }
-  @media (max-width: 600px) {
-    .tool-shell-wrap { width: calc(100% - 28px); min-height: 60px; }
+  @media (max-width: 560px) {
+    .tool-page .shell-head-inner { width: calc(100% - 28px); min-height: 60px; gap: 16px; }
+    .tool-page .shell-nav-links { display: none; }
+    .tool-page .shell-foot-inner { width: calc(100% - 28px); display: block; }
+    .tool-page .shell-foot-nav { margin-top: 14px; }
+    .tool-page .shell-foot-copy { width: calc(100% - 28px); }
   }
 }
