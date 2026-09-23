@@ -8,9 +8,9 @@ Use it from an iPhone or desktop browser to take or upload a photo, align the fa
 
 Current stable version: **1.0.0**
 
-## Live passport photo maker
+## Live site
 
-**https://avyanbhattacharya.github.io/passport-photo-web/**
+**https://cleanlocaltools.com/**
 
 The plain URL always serves the current stable build. Asset versions and the service-worker cache are managed internally so users do not need a version query parameter in the public URL.
 
@@ -109,11 +109,11 @@ The deployed page includes a canonical URL, descriptive title and meta descripti
 
 The canonical public URL is:
 
-`https://avyanbhattacharya.github.io/passport-photo-web/`
+`https://cleanlocaltools.com/`
 
 The sitemap is:
 
-`https://avyanbhattacharya.github.io/passport-photo-web/sitemap.xml`
+`https://cleanlocaltools.com/sitemap.xml`
 
 For Google indexing and performance reporting, add the site to Google Search Console and submit the sitemap there.
 
@@ -137,12 +137,11 @@ Desktop browsers generally treat localhost as a secure development context. For 
 
 ## Deploy with GitHub Pages
 
-1. Create a public GitHub repository named `passport-photo-web`.
-2. Upload or push these files to the `main` branch.
+1. Use the public GitHub repository named `cleantools`.
+2. Push changes to the `main` branch.
 3. Open **Settings → Pages**.
-4. Under **Build and deployment**, select **Deploy from a branch**.
-5. Choose `main` and `/ (root)`.
-6. Save.
+4. Under **Build and deployment**, select **GitHub Actions**.
+5. Keep the custom domain set to `cleanlocaltools.com`.
 
 GitHub will publish the site over HTTPS.
 

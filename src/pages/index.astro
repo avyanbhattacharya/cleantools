@@ -10,7 +10,7 @@ const head = (source.match(/<head>([\s\S]*?)<\/head>/i)?.[1] || '')
   .replace(/<link[^>]+href=["'][^"']*\/assets\/site\.css[^>]*>/gi, '');
 const originalBody = source.match(/<body>([\s\S]*?)<\/body>/i)?.[1] || '';
 const siteVersion = fs.readFileSync(path.resolve(process.cwd(), 'VERSION'), 'utf8').trim();
-const header = `<header class="site-header"><div class="wrap nav"><a class="brand" href="/" aria-label="Clean Local Tools home"><span class="brand-mark" aria-hidden="true">C</span>Clean Local Tools</a><nav class="nav-links" aria-label="Primary navigation"><a href="#tools">Tools</a><a href="#why">Why local</a><a href="https://github.com/avyanbhattacharya/passport-photo-web">GitHub</a></nav><div class="nav-actions"><button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">${uiIcon('sun')}</button><a class="nav-cta" href="#tools">Browse tools</a></div></div></header>`;
+const header = `<header class="site-header"><div class="wrap nav"><a class="brand" href="/" aria-label="Clean Local Tools home"><span class="brand-mark" aria-hidden="true">C</span>Clean Local Tools</a><nav class="nav-links" aria-label="Primary navigation"><a href="#tools">Tools</a><a href="#why">Why local</a><a href="https://github.com/avyanbhattacharya/cleantools">GitHub</a></nav><div class="nav-actions"><button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">${uiIcon('sun')}</button><a class="nav-cta" href="#tools">Browse tools</a></div></div></header>`;
 const body = originalBody
   .replace(/<header class="site-header">[\s\S]*?<\/header>/, header)
   .replaceAll('{{SITE_VERSION}}', siteVersion);
