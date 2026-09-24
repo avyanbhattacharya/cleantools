@@ -1,0 +1,13 @@
+Third-party software bundled with the Clean Local Tools QR & Barcode Scanner.
+
+1. jsQR v1.4.0
+   Source: https://github.com/cozmo/jsQR
+   Distributed file: qr-scanner/vendor/jsqr.min.js
+   License: Apache License, Version 2.0
+   Copyright: (c) 2017 Cosmo Wolfe
+   Full license text: qr-scanner/vendor/APACHE-2.0.txt
+   (also at https://www.apache.org/licenses/LICENSE-2.0)
+
+   jsQR is used only as an on-device QR code decoding fallback. It runs
+   entirely in the visitor's browser; it makes no network requests and
+   sends no data anywhere.

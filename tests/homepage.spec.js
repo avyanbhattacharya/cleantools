@@ -35,7 +35,7 @@ test('homepage presents the private-local story, catalog, and browser navigation
   await expect(page.getByRole('heading', { name: 'Tools', exact: true })).toBeVisible();
 
   const cards = page.locator('.tool-grid .tool-card');
-  await expect(cards).toHaveCount(15);
+  await expect(cards).toHaveCount(16);
 
   for (const linkName of catalogLinks) {
     await expect(page.getByRole('link', { name: linkName }).first()).toBeVisible();
@@ -60,8 +60,8 @@ test('mobile homepage keeps the promise and all tools on one grid', async ({ pag
   expect(Math.max(...tops) - Math.min(...tops)).toBeLessThanOrEqual(2);
 
   const cards = page.locator('.tool-grid .tool-card');
-  await expect(cards).toHaveCount(15);
-  for (let i = 0; i < 15; i++) {
+  await expect(cards).toHaveCount(16);
+  for (let i = 0; i < 16; i++) {
     await expect(cards.nth(i)).toBeVisible();
   }
 
