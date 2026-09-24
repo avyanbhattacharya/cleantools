@@ -42,6 +42,15 @@
   let nativeFormats = null;
   let cameraStream = null;
   let scanTimer = null;
+  // Generation counter for camera startup: each startCamera() captures the
+  // current generation, and stopCamera() increments it. An async startup step
+  // that resolves after its generation was invalidated (tab switch, another
+  // start, or stop while the permission prompt was open) must tear down its
+  // own stream and never publish it as the active session.
+  let cameraGeneration = 0;
+  // Request counter for uploads: each new selection invalidates decodes still
+  // in flight from older selections, so only the latest selection updates the page.
+  let uploadRequestId = 0;
 
   function showError(el, message) {
     el.textContent = message;
@@ -116,12 +125,7 @@
 
   async function handleImageSource(source, sw, sh) {
     const imageData = drawToWorkCanvas(source, sw, sh);
-    const found = await decodeImageData(imageData);
-    if (found) {
-      showResult(found.text, found.format);
-      return true;
-    }
-    return false;
+    return decodeImageData(imageData);
   }
 
   function showResult(text, format) {
@@ -142,6 +146,9 @@
   function handleFile(file) {
     clearError(uploadError);
     resultCard.hidden = true;
+    // This selection supersedes any decode still in flight from an older one.
+    const requestId = ++uploadRequestId;
+    const isCurrent = () => requestId === uploadRequestId;
     if (!file) return;
     if (!file.type.startsWith('image/')) {
       showError(uploadError, 'That file is not a picture. Choose a PNG, JPG, GIF, WebP, or BMP image of the code.');
@@ -157,15 +164,22 @@
       URL.revokeObjectURL(url);
       try {
         const found = await handleImageSource(img, img.naturalWidth, img.naturalHeight);
-        if (!found) {
+        // An older selection's decode resolving after a newer one must not
+        // overwrite the newer result, error, or empty state.
+        if (!isCurrent()) return;
+        if (found) {
+          showResult(found.text, found.format);
+        } else {
           showError(uploadError, 'No QR code or barcode was found in that picture. Try a sharper, closer, upright photo of the code.');
         }
       } catch (err) {
+        if (!isCurrent()) return;
         showError(uploadError, 'That picture could not be read. Try a different image file.');
       }
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
+      if (!isCurrent()) return;
       showError(uploadError, 'That picture could not be opened. Try a different image file.');
     };
     img.src = url;
@@ -222,13 +236,21 @@
       showError(cameraError, 'This browser cannot open the camera here. Camera access needs a secure page (https or localhost) and a browser with camera support; uploading a picture works instead.');
       return;
     }
+    // Stop any live session and invalidate any startup still awaiting its
+    // permission prompt, so a second tap cannot leak a duplicate stream.
+    stopCamera();
+    const generation = ++cameraGeneration;
     cameraStatus.textContent = 'Requesting camera access\u2026';
+    let stream;
     try {
-      cameraStream = await navigator.mediaDevices.getUserMedia({
+      stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment' },
         audio: false
       });
     } catch (err) {
+      // Superseded while the prompt was open (tab switch, stop, or a newer
+      // start): stay silent so the current state is not clobbered.
+      if (generation !== cameraGeneration) return;
       cameraStatus.textContent = 'Camera is off.';
       if (err && err.name === 'NotAllowedError') {
         showError(cameraError, 'Camera access was denied. Allow camera access in your browser\u2019s site settings, or upload a picture of the code instead.');
@@ -237,10 +259,21 @@
       }
       return;
     }
+    if (generation !== cameraGeneration) {
+      // The user left the camera tab or stopped while the prompt was open:
+      // release the granted stream immediately instead of starting it in a
+      // hidden panel.
+      stream.getTracks().forEach((track) => track.stop());
+      return;
+    }
+    cameraStream = stream;
     video.srcObject = cameraStream;
     try {
       await video.play();
     } catch (err) {
+      // Only tear down when this startup is still the active one; a newer
+      // session must not be disturbed by an older play() rejection.
+      if (generation !== cameraGeneration) return;
       stopCamera();
       showError(cameraError, 'The camera stream could not be played. Uploading a picture of the code works instead.');
       return;
@@ -255,9 +288,15 @@
   async function scanCameraFrame() {
     if (!cameraStream || video.readyState < 2 || scanCameraFrame.busy) return;
     scanCameraFrame.busy = true;
+    // Capture the stream this frame belongs to: a stop during the async
+    // decode must not publish a stale result or disturb the newer state.
+    const stream = cameraStream;
     try {
       const found = await handleImageSource(video, video.videoWidth, video.videoHeight);
-      if (found) stopCamera();
+      if (found && stream === cameraStream) {
+        showResult(found.text, found.format);
+        stopCamera();
+      }
     } catch (err) {
       /* keep the loop alive through transient frame errors */
     } finally {
@@ -266,6 +305,8 @@
   }
 
   function stopCamera() {
+    // Invalidate any camera startup still awaiting its permission prompt.
+    cameraGeneration++;
     if (scanTimer) {
       clearInterval(scanTimer);
       scanTimer = null;

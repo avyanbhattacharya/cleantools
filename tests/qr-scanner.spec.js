@@ -111,6 +111,115 @@ test('camera tab starts and stops the scanning session', async ({ page }) => {
   await expect(page.locator('#cameraStatus')).toContainText('Camera is off.');
 });
 
+// Installs getUserMedia whose permission grant is held until the test releases
+// it, so the "prompt open" window can be exercised deterministically.
+async function useControllableCamera(page) {
+  await page.addInitScript(() => {
+    window.__grantedStreams = [];
+    let resolveGrant;
+    window.__grantCameraPromise = new Promise((res) => { resolveGrant = res; });
+    window.__resolveCameraGrant = () => resolveGrant();
+    Object.defineProperty(navigator, 'mediaDevices', {
+      value: {
+        getUserMedia: async () => {
+          await window.__grantCameraPromise;
+          const canvas = document.createElement('canvas');
+          canvas.width = 64;
+          canvas.height = 64;
+          // Paint once so the capture stream carries real frames and the
+          // video element can start playing.
+          canvas.getContext('2d').fillRect(0, 0, 64, 64);
+          const stream = canvas.captureStream(10);
+          window.__grantedStreams.push(stream);
+          return stream;
+        }
+      },
+      configurable: true
+    });
+  });
+}
+
+async function liveStreamCount(page) {
+  return page.evaluate(() =>
+    window.__grantedStreams.filter((s) => s.getTracks().some((t) => t.readyState === 'live')).length
+  );
+}
+
+test('a camera granted after leaving the tab is released, not started', async ({ page }) => {
+  await useControllableCamera(page);
+  await page.goto('/qr-scanner/');
+  await page.locator('#tabCamera').click();
+  await page.locator('#startCameraBtn').click();
+  await expect(page.locator('#cameraStatus')).toContainText('Requesting camera access');
+  // Leave the camera tab while the permission prompt is still open.
+  await page.locator('#tabUpload').click();
+  await expect(page.locator('#panelCamera')).toBeHidden();
+  // Grant permission now: the stream must be torn down, never published.
+  await page.evaluate(() => window.__resolveCameraGrant());
+  await page.waitForFunction(() => window.__grantedStreams.length === 1);
+  await page.waitForFunction(() =>
+    window.__grantedStreams[0].getTracks().every((t) => t.readyState === 'ended')
+  );
+  await expect(page.locator('#videoWrap')).toBeHidden();
+  const srcObject = await page.evaluate(() => document.getElementById('video').srcObject);
+  expect(srcObject).toBeNull();
+  await expect(page.locator('#cameraError')).toBeHidden();
+});
+
+test('tapping start twice while the prompt is open starts only one session', async ({ page }) => {
+  await useControllableCamera(page);
+  await page.goto('/qr-scanner/');
+  await page.locator('#tabCamera').click();
+  await page.locator('#startCameraBtn').click();
+  await page.locator('#startCameraBtn').click();
+  await page.evaluate(() => window.__resolveCameraGrant());
+  await expect(page.locator('#videoWrap')).toBeVisible();
+  await page.waitForFunction(() => window.__grantedStreams.length === 2);
+  expect(await liveStreamCount(page)).toBe(1);
+  await page.locator('#stopCameraBtn').click();
+  await page.waitForFunction(() =>
+    window.__grantedStreams.every((s) => s.getTracks().every((t) => t.readyState === 'ended'))
+  );
+  await expect(page.locator('#videoWrap')).toBeHidden();
+});
+
+test('an older upload resolving after a newer one does not overwrite the result', async ({ page }) => {
+  // Hold every native detection behind a test-controlled promise so the two
+  // selections can be ordered: older first, newer resolved first. The
+  // headless shell has no BarcodeDetector, so install a stub class.
+  await page.addInitScript(() => {
+    window.__pendingDetects = [];
+    window.BarcodeDetector = class {
+      detect() {
+        return new Promise((resolve) => window.__pendingDetects.push(resolve));
+      }
+      static async getSupportedFormats() { return ['qr_code']; }
+    };
+  });
+  await page.goto('/qr-scanner/');
+  await page.$eval('#fileInput', el => el.removeAttribute('hidden'));
+  await page.locator('#fileInput').setInputFiles(TEXT_FIXTURE);
+  await page.waitForFunction(() => window.__pendingDetects.length === 1);
+  await page.locator('#fileInput').setInputFiles(URL_FIXTURE);
+  await page.waitForFunction(() => window.__pendingDetects.length === 2);
+  // The newer selection's decode finishes first.
+  await page.evaluate(() => window.__pendingDetects[1]([{ rawValue: 'NEWER-RESULT', format: 'qr_code' }]));
+  await expect(page.locator('#resultText')).toContainText('NEWER-RESULT');
+  // The older selection's decode finishes last: it must be ignored.
+  await page.evaluate(() => window.__pendingDetects[0]([{ rawValue: 'OLDER-RESULT', format: 'qr_code' }]));
+  // The stale continuation after a detection resolves is promise-driven only
+  // (no timers or I/O), so flushing microtask turns deterministically lets it
+  // run before asserting it changed nothing.
+  await page.evaluate(() => new Promise((resolve) => {
+    let i = 0;
+    const tick = () => { if (++i >= 50) resolve(); else queueMicrotask(tick); };
+    queueMicrotask(tick);
+  }));
+  await expect(page.locator('#resultText')).toContainText('NEWER-RESULT');
+  await expect(page.locator('#resultText')).not.toContainText('OLDER-RESULT');
+  await expect(page.locator('#uploadError')).toBeHidden();
+});
+
 test('decoding keeps working with the network unavailable', async ({ page, context }) => {
   await page.goto('/qr-scanner/');
   await context.setOffline(true);
