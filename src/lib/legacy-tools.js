@@ -4,7 +4,7 @@ import path from 'node:path';
 export const toolRoutes = [
   'clean-html-printer', 'clean-pdf-printer', 'compress-pdf', 'document-flattener',
   'heic-to-jpg', 'image-to-pdf', 'japa-counter', 'merge-pdf', 'passport-photo',
-  'photo-to-scan', 'qr-code-maker', 'remove-photo-metadata', 'resize-image', 'split-pdf'
+  'photo-to-scan', 'qr-code-maker', 'qr-scanner', 'remove-photo-metadata', 'resize-image', 'split-pdf'
 ];
 
 export const astroManagedToolFiles = {
