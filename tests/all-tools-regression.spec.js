@@ -1,4 +1,5 @@
 const { test, expect } = require('@playwright/test');
+const path = require('node:path');
 const { toolContracts } = require('./tool-contracts');
 
 for (const { route, heading } of toolContracts) {
@@ -146,4 +147,29 @@ test('tool pages share one consistent header and footer', async ({ page }) => {
   // A tool-specific footer note must survive the footer consolidation.
   await page.goto('/passport-photo/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('footer')).toContainText('No generative face editing');
+});
+
+test('passport photo camera, picker, and editor controls respond on mobile Safari', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'mediaDevices', {
+      configurable: true,
+      value: { getUserMedia: () => Promise.reject(new DOMException('Permission denied', 'NotAllowedError')) }
+    });
+  });
+  await page.goto('/passport-photo/');
+  await page.locator('#startCamera').click();
+  await expect(page.locator('#cameraError')).toBeVisible();
+  await expect(page.locator('#cameraError')).toContainText('Permission denied');
+
+  const chooserPromise = page.waitForEvent('filechooser');
+  await page.locator('label.upload').click();
+  const chooser = await chooserPromise;
+  await chooser.setFiles(path.join(__dirname, 'fixtures', 'passport-test.svg'));
+  await expect(page.locator('#editorCard')).toBeVisible();
+
+  await page.locator('#format').selectOption('35x45');
+  await expect(page.locator('#preview')).toHaveAttribute('width', '630');
+  await page.locator('#brightness').fill('10');
+  await page.locator('#reset').click();
+  await expect(page.locator('#brightness')).toHaveValue('0');
 });
