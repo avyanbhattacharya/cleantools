@@ -47,12 +47,12 @@
 
   function profileForFraming(framing){
     // Face landmarks stop near the forehead rather than the top of the hair.
-    // The biometric target is calibrated so the estimated full head occupies
-    // about 80–85% of the image with a small top margin.
+    // Reserve extra room for hair above the forehead landmarks. At the
+    // biometric face target, this estimates a full head near 83% of the frame.
     if(framing==='us')return {targetFace:.43,targetEye:.44,liveMin:.22,liveMax:.48,tolerance:.035,summary:'Face positioned for the 2×2 inch head-size range with visible hair and a small top margin.'};
     if(framing==='canada')return {targetFace:.46,targetEye:.43,liveMin:.25,liveMax:.54,tolerance:.035,summary:'Face positioned for the Canada 50 × 70 mm head-size range with visible hair and a small top margin.'};
     if(framing==='custom')return {targetFace:.52,targetEye:.44,liveMin:.26,liveMax:.56,tolerance:.04,summary:'Face positioned using general passport-photo guidance. Verify the requirements for your custom size.'};
-    return {targetFace:.64,targetEye:.48,liveMin:.34,liveMax:.64,tolerance:.04,topMargin:.04,summary:'Face positioned for a close biometric crop while keeping the full hairline and a small clear margin above it.'};
+    return {targetFace:.64,targetEye:.48,liveMin:.34,liveMax:.64,tolerance:.04,topMargin:.04,crownAllowance:.30,summary:'Face positioned for a close biometric crop. Check that the full hair and a clear top margin are visible before downloading.'};
   }
 
   function framingProfile(){return profileForFraming(window.getPassportFormat?.().framing);}
@@ -124,7 +124,7 @@
       const predictedCx=.5+(m.cx-.5)*appliedScale,predictedEye=.5+(m.eyeY-.5)*appliedScale;
       fireRange('xpos',Number($('xpos').value)+(.5-predictedCx)*400);
       const eyeShift=profile.targetEye-predictedEye;
-      const estimatedCrown=m.minY-m.faceH*.14;
+      const estimatedCrown=m.minY-m.faceH*(profile.crownAllowance??.14);
       const predictedCrown=.5+(estimatedCrown-.5)*appliedScale;
       const crownShift=profile.topMargin?profile.topMargin-predictedCrown:-1;
       fireRange('ypos',Number($('ypos').value)+Math.max(eyeShift,crownShift)*400);
