@@ -52,7 +52,7 @@
     if(framing==='us')return {targetFace:.43,targetEye:.44,liveMin:.22,liveMax:.48,tolerance:.035,summary:'Face positioned for the 2×2 inch head-size range with visible hair and a small top margin.'};
     if(framing==='canada')return {targetFace:.46,targetEye:.43,liveMin:.25,liveMax:.54,tolerance:.035,summary:'Face positioned for the Canada 50 × 70 mm head-size range with visible hair and a small top margin.'};
     if(framing==='custom')return {targetFace:.52,targetEye:.44,liveMin:.26,liveMax:.56,tolerance:.04,summary:'Face positioned using general passport-photo guidance. Verify the requirements for your custom size.'};
-    return {targetFace:.64,targetEye:.48,liveMin:.34,liveMax:.64,tolerance:.04,topMargin:.04,crownAllowance:.30,summary:'Face positioned for a close biometric crop. Check that the full hair and a clear top margin are visible before downloading.'};
+    return {targetFace:.64,targetEye:.48,liveMin:.34,liveMax:.64,tolerance:.04,topMargin:.04,crownAllowance:.40,summary:'Face positioned for a close biometric crop. Check that the full hair and a clear top margin are visible before downloading.'};
   }
 
   function framingProfile(){return profileForFraming(window.getPassportFormat?.().framing);}
@@ -109,6 +109,38 @@
     return metrics(faces[0],preview.width,preview.height);
   }
 
+  async function detectSource(onStage){
+    const source=window.getPassportSource?.();
+    if(!source)throw Error('Choose or capture a photo before positioning.');
+    const lmkr=await withTimeout(imageLandmarker(),20000,'The face model took too long to load. Check your connection and tap Auto-position face again.');
+    onStage?.('Detecting your face in the original photo…');
+    const det=lmkr.detect(source),faces=det.faceLandmarks||[];
+    if(faces.length!==1)throw Error('Exactly one clear face is required for automatic positioning.');
+    return {source,m:metrics(faces[0],source.width,source.height)};
+  }
+
+  function sourceFraming(source,m,profile){
+    const w=preview.width,h=preview.height,cover=Math.max(w/source.width,h/source.height);
+    const desiredZoom=profile.targetFace*h/(m.faceH*source.height*cover)*100;
+    const crown=Math.max(0,m.minY-m.faceH*(profile.crownAllowance??.14));
+    // Keep the original photograph covering the output. The preview may have
+    // already cropped the hair, so calculate these bounds from the source.
+    let choice;
+    for(let zoom=Math.min(180,Math.max(100,Math.floor(desiredZoom)));zoom>=100;zoom--){
+      const scale=cover*zoom/100,ratio=source.height*scale/h;
+      const center=(1-ratio)/2;
+      const upper=Math.min(.25,(ratio-1)/2),lower=Math.max(-.25,(1-ratio)/2);
+      const eye=profile.targetEye-(center+m.eyeY*ratio);
+      const hair=profile.topMargin==null?-Infinity:profile.topMargin-(center+crown*ratio);
+      const shift=Math.max(eye,hair);
+      choice={zoom,shift:Math.max(lower,Math.min(upper,shift)),crownY:center+crown*ratio+Math.max(lower,Math.min(upper,shift))};
+      if(shift<=upper+.001)break;
+    }
+    const widthRatio=source.width*cover*choice.zoom/100/w;
+    const xShift=Math.max(-.25,Math.min(.25,(.5-m.cx)*widthRatio));
+    return {...choice,x:xShift*400,y:choice.shift*400};
+  }
+
   $('autoPosition')?.addEventListener('click',async()=>{
     if(autoBusy)return;autoBusy=true;
     const b=$('autoPosition'),msg=$('autoPositionStatus');b.disabled=true;b.textContent='Positioning…';msg.textContent='Loading the on-device face model…';
@@ -117,19 +149,14 @@
       // main thread briefly. One measured adjustment plus one verification is
       // substantially faster than repeatedly running the model on mobile.
       await new Promise(r=>setTimeout(r,50));
-      const profile=framingProfile(),m=await detectPreview(text=>{msg.textContent=text}),zoom=$('zoom'),current=Number(zoom.value);
+      const profile=framingProfile(),{source,m}=await detectSource(text=>{msg.textContent=text});
       msg.textContent='Applying the passport framing…';
-      fireRange('zoom',current*(profile.targetFace/Math.max(.01,m.faceH)));
-      const appliedScale=Number(zoom.value)/Math.max(1,current);
-      const predictedCx=.5+(m.cx-.5)*appliedScale,predictedEye=.5+(m.eyeY-.5)*appliedScale;
-      fireRange('xpos',Number($('xpos').value)+(.5-predictedCx)*400);
-      const eyeShift=profile.targetEye-predictedEye;
-      const estimatedCrown=m.minY-m.faceH*(profile.crownAllowance??.14);
-      const predictedCrown=.5+(estimatedCrown-.5)*appliedScale;
-      const crownShift=profile.topMargin?profile.topMargin-predictedCrown:-1;
-      fireRange('ypos',Number($('ypos').value)+Math.max(eyeShift,crownShift)*400);
+      const framing=sourceFraming(source,m,profile);
+      fireRange('zoom',framing.zoom);
+      fireRange('xpos',framing.x);
+      fireRange('ypos',framing.y);
       await new Promise(r=>requestAnimationFrame(r));
-      msg.textContent=profile.summary+' Review the hairline and run checks.';
+      msg.textContent=profile.summary+(profile.topMargin!=null&&framing.crownY<profile.topMargin-.01?' The original photo may not have enough background to keep a full top margin at this size.':'')+' Review the hairline and run checks.';
     }catch(e){console.error(e);msg.textContent=e.message||'Automatic positioning could not run.';}
     finally{autoBusy=false;b.disabled=false;b.textContent='Auto-position face';}
   });
