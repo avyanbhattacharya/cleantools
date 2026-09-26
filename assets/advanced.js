@@ -119,17 +119,52 @@
     return {source,m:metrics(faces[0],source.width,source.height)};
   }
 
+  function visibleHairTop(source,m){
+    // Compare the top of the head with the background on both sides of the
+    // source photo. Face landmarks end at the forehead, below the hair.
+    const scale=Math.min(1,384/Math.max(source.width,source.height));
+    const c=document.createElement('canvas');
+    c.width=Math.max(1,Math.round(source.width*scale));
+    c.height=Math.max(1,Math.round(source.height*scale));
+    const ctx=c.getContext('2d',{willReadFrequently:true});
+    ctx.drawImage(source,0,0,c.width,c.height);
+    const {data}=ctx.getImageData(0,0,c.width,c.height),w=c.width;
+    const left=Math.max(1,Math.floor((m.cx-(m.maxX-m.minX)*.6)*w));
+    const right=Math.min(w-2,Math.ceil((m.cx+(m.maxX-m.minX)*.6)*w));
+    let consecutive=0;
+    for(let y=1;y<Math.min(c.height-1,Math.ceil(m.minY*c.height));y++){
+      const side=(x)=>{const p=(y*w+x)*4;return[data[p],data[p+1],data[p+2]]};
+      const l=side(Math.floor(w*.04)),r=side(Math.ceil(w*.96));
+      const background=(l[0]+l[1]+l[2]+r[0]+r[1]+r[2])/6;
+      let run=0,found=false;
+      for(let x=left;x<=right;x++){
+        const p=(y*w+x)*4,brightness=(data[p]+data[p+1]+data[p+2])/3;
+        const difference=Math.min(
+          Math.abs(data[p]-l[0])+Math.abs(data[p+1]-l[1])+Math.abs(data[p+2]-l[2]),
+          Math.abs(data[p]-r[0])+Math.abs(data[p+1]-r[1])+Math.abs(data[p+2]-r[2]));
+        run=background-brightness>28&&difference>115?run+1:0;
+        if(run>=Math.max(4,Math.floor((right-left)*.13))){found=true;break;}
+      }
+      consecutive=found?consecutive+1:0;
+      if(consecutive>=3)return (y-2)/c.height;
+    }
+    return null;
+  }
+
   function sourceFraming(source,m,profile){
     const w=preview.width,h=preview.height,cover=Math.max(w/source.width,h/source.height);
     const desiredZoom=profile.targetFace*h/(m.faceH*source.height*cover)*100;
-    const crown=Math.max(0,m.minY-m.faceH*(profile.crownAllowance??.14));
+    const estimatedCrown=Math.max(0,m.minY-m.faceH*(profile.crownAllowance??.14));
+    const observedCrown=profile.topMargin==null?null:visibleHairTop(source,m);
+    const crown=observedCrown==null?estimatedCrown:Math.min(estimatedCrown,observedCrown);
     // Keep the original photograph covering the output. The preview may have
     // already cropped the hair, so calculate these bounds from the source.
     let choice;
     for(let zoom=Math.min(180,Math.max(100,Math.floor(desiredZoom)));zoom>=100;zoom--){
       const scale=cover*zoom/100,ratio=source.height*scale/h;
       const center=(1-ratio)/2;
-      const upper=Math.min(.25,(ratio-1)/2),lower=Math.max(-.25,(1-ratio)/2);
+      const panLimit=Number($('ypos').max)/400;
+      const upper=Math.min(panLimit,(ratio-1)/2),lower=Math.max(-panLimit,(1-ratio)/2);
       const eye=profile.targetEye-(center+m.eyeY*ratio);
       const hair=profile.topMargin==null?-Infinity:profile.topMargin-(center+crown*ratio);
       const shift=Math.max(eye,hair);
